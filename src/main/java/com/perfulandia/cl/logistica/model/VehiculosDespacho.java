@@ -15,21 +15,20 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class GuiaDespacho {
+@NoArgsConstructor
+public class VehiculosDespacho {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer idDespacho;
+    private Integer idVehiculoDespacho;
 
-    @Column(name="id_envio")
-    private Integer idEnvio;
+    @Column(name = "patente" , nullable = false , length = 13)
+    private String patente;
 
-    @Column(name="id_orden")
-    private Integer idOrden;
+    @Column(name = "ano" , nullable = false , length = 4)
+    private Integer ano;
 
-    @OneToMany(mappedBy = "guiaDespacho",cascade = CascadeType.ALL , orphanRemoval = true)
+    @OneToMany(mappedBy = "vehiculoDespacho" , cascade = CascadeType.ALL , orphanRemoval = true)
     private List<Envio> envios;
-
 }

@@ -7,6 +7,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
@@ -29,9 +32,6 @@ public class Envio {
     @Column(name = "id_orden" , nullable = false)
     private Integer idOrden;
 
-    @Column(name = "id_vehiculo" , nullable = false)
-    private Integer idVehiculo;
-
     @Column(name = "fecha_entrega" , nullable = false)
     @Temporal(TemporalType.DATE)
     private LocalDate fechaEntrega;
@@ -39,6 +39,15 @@ public class Envio {
     @Column(name = "entregado" , nullable = false)
     private boolean entregado;
 
-    @Column(name = "observacin" , nullable = false , length = 150)
+    @Column(name = "observacion" , nullable = false , length = 150)
     private String observacion;
+
+    @ManyToOne
+    @JoinColumn(name = "id_vehiculo",nullable = false)
+    private VehiculosDespacho vehiculoDespacho;
+
+    @ManyToOne
+    @JoinColumn(name = "id_despacho",nullable = false)
+    private GuiaDespacho guiaDespacho;
+
 }
