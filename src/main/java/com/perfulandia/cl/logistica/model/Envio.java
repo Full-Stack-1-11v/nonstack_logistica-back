@@ -43,7 +43,7 @@ public class Envio {
 
     @ManyToOne
     @JoinColumn(name = "id_vehiculo",nullable = false)
-    private VehiculosDespacho vehiculoDespacho;
+    private VehiculoDespacho vehiculoDespacho;
 
     @ManyToOne
     @JoinColumn(name = "id_despacho",nullable = false)
