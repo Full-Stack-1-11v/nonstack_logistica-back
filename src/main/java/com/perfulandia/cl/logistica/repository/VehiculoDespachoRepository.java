@@ -8,5 +8,7 @@ import com.perfulandia.cl.logistica.model.VehiculoDespacho;
 @Repository
 public interface VehiculoDespachoRepository extends JpaRepository<VehiculoDespacho,Integer>{
 
-    public VehiculoDespacho findByPatente(String patente);
+    VehiculoDespacho findByPatente(String patente);
+    boolean existsByPatente(String patente);
+    void deleteByPatente(String patente);
 }
