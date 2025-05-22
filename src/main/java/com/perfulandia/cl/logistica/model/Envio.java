@@ -2,6 +2,8 @@ package com.perfulandia.cl.logistica.model;
 
 import java.time.LocalDate;
 
+
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -28,25 +30,25 @@ public class Envio {
     @Column(name = "id_cliente", nullable = false)
     private Integer idCliente;
 
-    @Column(name = "id_orden" , nullable = false)
+    @Column(name = "id_orden", nullable = false)
     private Integer idOrden;
 
-    @Column(name = "fecha_entrega" , nullable = false)
+    @Column(name = "fecha_entrega", nullable = false)
     @Temporal(TemporalType.DATE)
     private LocalDate fechaEntrega;
 
-    @Column(name = "entregado" , nullable = false)
+    @Column(name = "entregado", nullable = false)
     private boolean entregado;
 
-    @Column(name = "observacion" , nullable = false , length = 150)
+    @Column(name = "observacion", nullable = false, length = 150)
     private String observacion;
 
     @ManyToOne
-    @JoinColumn(name = "id_vehiculo",nullable = false)
-    private VehiculoDespacho vehiculoDespacho;
+    @JoinColumn(name = "id_despacho", nullable = false)
+    private GuiaDespacho guiaDespacho;
 
     @ManyToOne
-    @JoinColumn(name = "id_despacho",nullable = false)
-    private GuiaDespacho guiaDespacho;
+    @JoinColumn(name = "id_vehiculo", nullable = false)
+    private VehiculoDespacho vehiculoDespacho;
 
 }
