@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 
 import com.perfulandia.cl.logistica.model.GuiaDespacho;
 
+
 @Repository
 public interface GuiaDespachoRepository extends JpaRepository<GuiaDespacho,Integer>{
 
