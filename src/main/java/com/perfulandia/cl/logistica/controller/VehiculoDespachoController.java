@@ -3,10 +3,13 @@ package com.perfulandia.cl.logistica.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.perfulandia.cl.logistica.converter.VehiculoDespachoConverter;
+import com.perfulandia.cl.logistica.dto.VehiculoDespachoDTO;
 import com.perfulandia.cl.logistica.model.VehiculoDespacho;
 import com.perfulandia.cl.logistica.service.VehiculoDespachoService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,7 +37,11 @@ public class VehiculoDespachoController {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
 
-            return ResponseEntity.ok(vehiculos);
+            List<VehiculoDespachoDTO> vehiculoDespachoDTO = vehiculos.stream()
+                .map(VehiculoDespachoConverter::convertDTOVehiculo)
+                .collect(Collectors.toList());
+
+            return ResponseEntity.ok(vehiculoDespachoDTO);
         } catch (Exception e) {
             return new ResponseEntity<>("Error : " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -46,7 +53,9 @@ public class VehiculoDespachoController {
             VehiculoDespacho vehiculoRegistrar = vehiculoDespachoService.registrarVehiculoDespacho(vehiculo);
             if(vehiculoRegistrar == null){
                 return new ResponseEntity<>("vehiculo con esa patente ya existe" , HttpStatus.CONFLICT);
-            } 
+            }
+            
+            
             
             return new ResponseEntity<>(vehiculo , HttpStatus.CREATED);
             

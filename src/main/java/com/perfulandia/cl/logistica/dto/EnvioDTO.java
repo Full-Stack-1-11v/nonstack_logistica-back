@@ -18,6 +18,6 @@ public class EnvioDTO {
     private Boolean entregado;
     private String observacion;
     private Integer guiaDespachoId; // Solo la ID, eso es lo que quiero traerme!!
-    private Integer vehiculoDespachoId; // Solo la ID, eso es lo que quiero trarme nomas!!
+    private Integer vehiculoDespachoId; 
     private Integer rutaId;
 }
