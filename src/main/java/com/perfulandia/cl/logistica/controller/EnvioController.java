@@ -1,5 +1,6 @@
 package com.perfulandia.cl.logistica.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,6 +22,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequestMapping("/api/v1/logistica/envios")
@@ -53,6 +56,20 @@ public class EnvioController {
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @GetMapping("/buscar-por-fecha/{fechaInicio}/{fechaFin}")
+    public ResponseEntity<?> findEnvioByDate(@PathVariable LocalDate fechaInicio,@PathVariable LocalDate fechaFin) {
+        try {
+            List<Envio> enviosEncontrados = envioService.buscarEnvioPorRangoDeFecha(fechaInicio, fechaFin);
+            List<EnvioDTO> enviosDTO = enviosEncontrados.stream()
+                .map(EnvioConverter::convertToDTO)
+                .collect(Collectors.toList());
+            return ResponseEntity.ok(enviosDTO);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
+        }
+    }
+    
 
     @PostMapping("")
     public ResponseEntity<?> crearEnvio(@RequestBody Envio envio) {

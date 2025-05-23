@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequestMapping("/api/v1/logistica/vehiculos")
@@ -46,6 +48,20 @@ public class VehiculoDespachoController {
             return new ResponseEntity<>("Error : " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping("/{patron_patente}")
+    public ResponseEntity<?> buscarPorPatronPatente(@PathVariable String patron_patente) {
+        try {
+            List<VehiculoDespacho> vehiculosEncontrados = vehiculoDespachoService.buscarVehiculoPorPatronPatente(patron_patente);
+            List<VehiculoDespachoDTO> vehiculosDTO = vehiculosEncontrados.stream()
+                .map(VehiculoDespachoConverter::convertDTOVehiculo)
+                .collect(Collectors.toList());
+            return ResponseEntity.ok(vehiculosDTO);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
+        }
+    }
+    
 
     @PostMapping("")
     public ResponseEntity<?> createVehiculoDespacho(@RequestBody VehiculoDespacho vehiculo) {

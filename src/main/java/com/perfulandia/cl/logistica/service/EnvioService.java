@@ -1,5 +1,6 @@
 package com.perfulandia.cl.logistica.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -85,6 +86,11 @@ public class EnvioService {
         }
 
         return envioRepository.save(envioExistente);
+    }
+
+    public List<Envio> buscarEnvioPorRangoDeFecha(LocalDate fechaInicial , LocalDate fechaFinal) throws Exception{
+        List<Envio> enviosEncontrados = envioRepository.buscarPorRangoDeFecha(fechaInicial, fechaFinal);
+        return enviosEncontrados;
     }
 
     public void eliminarEnvio(Integer id) throws Exception {

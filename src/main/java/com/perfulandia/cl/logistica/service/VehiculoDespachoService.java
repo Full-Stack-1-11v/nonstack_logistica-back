@@ -71,6 +71,16 @@ public class VehiculoDespachoService {
 
     }
 
+    public List<VehiculoDespacho> buscarVehiculoPorPatronPatente(String patente) throws Exception{
+        if(patente.length() != 2){
+            throw new RuntimeException("Se deben de colocar dos valores alfanumericos como patron inicial");
+        }
+
+        List<VehiculoDespacho> vehiculosEncontrados = vehiculoDespachoRepository.buscarPorPatronPatente(patente);
+
+        return vehiculosEncontrados;
+    }
+
     @Transactional
     public void borrarVehiculoDespacho(String patente) throws Exception{
         if(!vehiculoDespachoRepository.existsByPatente(patente)){
