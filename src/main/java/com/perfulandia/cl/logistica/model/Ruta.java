@@ -1,10 +1,17 @@
 package com.perfulandia.cl.logistica.model;
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,10 +29,17 @@ public class Ruta {
 
     @Column(name = "coord_x_inicio", nullable = false)
     private float coordXInicio;
+
     @Column(name = "coord_y_inicio", nullable = false)
     private float coordYInicio;
+
     @Column(name = "coord_x_final", nullable = false)
     private float coordXFinal;
+
     @Column(name = "coord_y_final", nullable = false)
     private float coordYFinal;
+
+    @OneToMany(mappedBy = "ruta" , cascade = CascadeType.ALL , orphanRemoval = true)
+    @JsonIgnore
+    private List<Envio> envios;
 }

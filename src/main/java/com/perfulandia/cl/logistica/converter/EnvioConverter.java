@@ -11,13 +11,16 @@ public class EnvioConverter {
         dto.setIdCliente(envio.getIdCliente());
         dto.setIdOrden(envio.getIdOrden());
         dto.setFechaEntrega(envio.getFechaEntrega());
-        dto.setEntregado(envio.isEntregado());
+        dto.setEntregado(envio.getEntregado());
         dto.setObservacion(envio.getObservacion());
         if (envio.getGuiaDespacho() != null) {
             dto.setGuiaDespachoId(envio.getGuiaDespacho().getIdDespacho());
         }
         if (envio.getVehiculoDespacho() != null) {
             dto.setVehiculoDespachoId(envio.getVehiculoDespacho().getIdVehiculoDespacho());
+        }
+        if (envio.getRuta() != null) {
+            dto.setRutaId(envio.getRuta().getIdRuta());
         }
         return dto;
     }

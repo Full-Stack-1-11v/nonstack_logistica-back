@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class RutaController {
 
     @Autowired
-
     private RutaService rutaService;
 
     @GetMapping("")
@@ -45,7 +44,7 @@ public class RutaController {
     }
 
     @PostMapping("")
-    public ResponseEntity<?> postMethodName(@RequestBody Ruta nuevaRuta) {
+    public ResponseEntity<?> createRuta(@RequestBody Ruta nuevaRuta) {
 
         try {
             rutaService.crearRuta(nuevaRuta);

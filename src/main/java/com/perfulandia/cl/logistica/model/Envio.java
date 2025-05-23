@@ -38,7 +38,7 @@ public class Envio {
     private LocalDate fechaEntrega;
 
     @Column(name = "entregado", nullable = false)
-    private boolean entregado;
+    private Boolean entregado;
 
     @Column(name = "observacion", nullable = false, length = 150)
     private String observacion;
@@ -50,5 +50,9 @@ public class Envio {
     @ManyToOne
     @JoinColumn(name = "id_vehiculo", nullable = false)
     private VehiculoDespacho vehiculoDespacho;
+
+    @ManyToOne
+    @JoinColumn(name = "id_ruta",nullable = false)
+    private Ruta ruta;
 
 }
