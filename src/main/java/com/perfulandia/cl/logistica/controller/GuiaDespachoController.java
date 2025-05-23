@@ -3,12 +3,15 @@ package com.perfulandia.cl.logistica.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.perfulandia.cl.logistica.converter.GuiaDespachoConverter;
+import com.perfulandia.cl.logistica.dto.GuiaDespachoDTO;
 import com.perfulandia.cl.logistica.dto.OrdenDTO;
 import com.perfulandia.cl.logistica.model.GuiaDespacho;
 import com.perfulandia.cl.logistica.service.GuiaDespachoService;
 import com.perfulandia.cl.logistica.service.UserDTOService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -40,7 +43,11 @@ public class GuiaDespachoController {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
 
-            return new ResponseEntity<>(despachos, HttpStatus.OK);
+            List<GuiaDespachoDTO> despachosDTO = despachos.stream()
+                .map(GuiaDespachoConverter::convertToDTO)
+                .collect(Collectors.toList());
+
+            return new ResponseEntity<>(despachosDTO, HttpStatus.OK);
 
         } catch (Exception e) {
             return new ResponseEntity<>("Error : " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
