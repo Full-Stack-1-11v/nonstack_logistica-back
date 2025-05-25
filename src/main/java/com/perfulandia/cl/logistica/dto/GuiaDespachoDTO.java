@@ -15,6 +15,8 @@ public class GuiaDespachoDTO {
     private Integer idDespacho;
     private Integer idEnvio;
     private Integer idOrden;
+    private OrdenDTO datosOrden;
     private List<Integer> idEnvios;
+    
     
 }

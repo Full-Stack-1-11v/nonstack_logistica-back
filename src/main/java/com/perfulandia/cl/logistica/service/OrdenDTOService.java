@@ -9,13 +9,17 @@ import com.perfulandia.cl.logistica.client.OrdenFeignClient;
 import com.perfulandia.cl.logistica.dto.OrdenDTO;
 
 @Service
-public class UserDTOService {
+public class OrdenDTOService {
 
     @Autowired
     private OrdenFeignClient ordenClient;
 
     public List<OrdenDTO> verOrdenes(){
         return ordenClient.getOrdenes();
+    }
+
+    public OrdenDTO obtenerOrdenPorId(Integer id){
+        return ordenClient.obtenerOrdenPorId(id);
     }
 
 }

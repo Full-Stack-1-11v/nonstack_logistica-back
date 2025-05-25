@@ -3,12 +3,13 @@ package com.perfulandia.cl.logistica.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.perfulandia.cl.logistica.client.OrdenFeignClient;
 import com.perfulandia.cl.logistica.converter.GuiaDespachoConverter;
 import com.perfulandia.cl.logistica.dto.GuiaDespachoDTO;
 import com.perfulandia.cl.logistica.dto.OrdenDTO;
 import com.perfulandia.cl.logistica.model.GuiaDespacho;
 import com.perfulandia.cl.logistica.service.GuiaDespachoService;
-import com.perfulandia.cl.logistica.service.UserDTOService;
+import com.perfulandia.cl.logistica.service.OrdenDTOService;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,7 +34,9 @@ public class GuiaDespachoController {
     @Autowired
     private GuiaDespachoService guiaDespachoService;
     @Autowired
-    private UserDTOService UserDTOService;
+    private OrdenDTOService UserDTOService;
+    @Autowired
+    private OrdenFeignClient ordenClient;
 
     @GetMapping("")
     public ResponseEntity<?> getDespachos() {
@@ -44,7 +47,7 @@ public class GuiaDespachoController {
             }
 
             List<GuiaDespachoDTO> despachosDTO = despachos.stream()
-                .map(GuiaDespachoConverter::convertToDTO)
+                .map(guia -> GuiaDespachoConverter.convertToDTO(guia,guia.getIdOrden(),ordenClient))
                 .collect(Collectors.toList());
 
             return new ResponseEntity<>(despachosDTO, HttpStatus.OK);
