@@ -33,7 +33,7 @@ public class GuiaDespachoService {
     @Transactional
     public GuiaDespacho putGuiaDespacho(GuiaDespacho guiaDespacho, Integer id) throws Exception {
 
-        if (guiaDespachoRepository.existsById(id)) {
+        if (!guiaDespachoRepository.existsById(id)) {
             throw new RuntimeException("El despacho no existe");
         } else {
             Optional<GuiaDespacho> guiaDespachoExistente = guiaDespachoRepository.findById(id);

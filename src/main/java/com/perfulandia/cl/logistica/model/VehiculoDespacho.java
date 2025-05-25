@@ -24,7 +24,7 @@ public class VehiculoDespacho {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idVehiculoDespacho;
 
-    @Column(name = "patente" , nullable = false , length = 13)
+    @Column(name = "patente" , nullable = false , length = 13, unique = true)
     private String patente;
 
     @Column(name = "ano" , nullable = false , length = 4)

@@ -23,8 +23,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-
-
 @RestController
 @RequestMapping("/api/v1/logistica/envios")
 public class EnvioController {
@@ -58,24 +56,28 @@ public class EnvioController {
     }
 
     @GetMapping("/buscar-por-fecha/{fechaInicio}/{fechaFin}")
-    public ResponseEntity<?> findEnvioByDate(@PathVariable LocalDate fechaInicio,@PathVariable LocalDate fechaFin) {
+    public ResponseEntity<?> findEnvioByDate(@PathVariable LocalDate fechaInicio, @PathVariable LocalDate fechaFin) {
         try {
             List<Envio> enviosEncontrados = envioService.buscarEnvioPorRangoDeFecha(fechaInicio, fechaFin);
             List<EnvioDTO> enviosDTO = enviosEncontrados.stream()
-                .map(EnvioConverter::convertToDTO)
-                .collect(Collectors.toList());
+                    .map(EnvioConverter::convertToDTO)
+                    .collect(Collectors.toList());
             return ResponseEntity.ok(enviosDTO);
         } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
-    
 
     @PostMapping("")
     public ResponseEntity<?> crearEnvio(@RequestBody Envio envio) {
-        Envio nuevoEnvio = envioService.crearEnvio(envio);
-        EnvioDTO envioDTO = EnvioConverter.convertToDTO(nuevoEnvio);
-        return new ResponseEntity<>(envioDTO, HttpStatus.CREATED);
+        try {
+            Envio nuevoEnvio = envioService.crearEnvio(envio);
+            EnvioDTO envioDTO = EnvioConverter.convertToDTO(nuevoEnvio);
+            return new ResponseEntity<>(envioDTO, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
     }
 
     @PutMapping("/{id}")
