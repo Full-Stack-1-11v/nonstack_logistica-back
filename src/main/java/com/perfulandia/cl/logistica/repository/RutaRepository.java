@@ -13,7 +13,7 @@ import feign.Param;
 @Repository
 public interface RutaRepository extends JpaRepository<Ruta, Integer> {
     
-    @Query(value = "SELECT * FROM ruta WHERE coord_x_final BETWEEN :x_1 AND :x_2 AND coord_y_final BETWEEN y_1 AND y_2", nativeQuery = true)
+    @Query(value = "SELECT * FROM ruta WHERE coord_x_final BETWEEN :x_1 AND :x_2 AND coord_y_final BETWEEN :y_1 AND :y_2", nativeQuery = true)
     List<Ruta> buscarPorRangoDeFecha(
             @Param("x_1") Float x_1,
             @Param("x_2") Float x_2,
