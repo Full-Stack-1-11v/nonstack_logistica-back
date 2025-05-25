@@ -1,6 +1,5 @@
 package com.perfulandia.cl.logistica.controller;
 
-
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,8 +17,6 @@ import com.perfulandia.cl.logistica.service.RutaService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-
-
 
 @RestController
 @RequestMapping("/api/v1/logistica/envios/rutas")
@@ -50,7 +48,7 @@ public class RutaController {
             rutaService.crearRuta(nuevaRuta);
             return ResponseEntity.ok(nuevaRuta);
         } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -58,6 +56,16 @@ public class RutaController {
     public ResponseEntity<?> putRuta(@RequestBody Ruta ruta, @PathVariable Integer idRuta) {
         try {
             Ruta rutaActualizada = rutaService.putRuta(ruta, idRuta);
+            return ResponseEntity.ok(rutaActualizada);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping("/{idRuta}")
+    public ResponseEntity<?> patchRuta(@RequestBody Ruta ruta, @PathVariable Integer idRuta) {
+        try {
+            Ruta rutaActualizada = rutaService.parcharRuta(ruta, idRuta);
             return ResponseEntity.ok(rutaActualizada);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -73,6 +81,5 @@ public class RutaController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    
-    
+
 }

@@ -51,7 +51,8 @@ public class RutaService {
             if(ruta.getCoordYFinal() != 0){
                 rutaExistente.setCoordYFinal(ruta.getCoordYFinal());
             }
-            return rutaRepository.save(rutaExistente);
+            rutaRepository.save(rutaExistente);
+            return rutaExistente;
         }
    }
 
