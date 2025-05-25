@@ -17,6 +17,11 @@ public class RutaService {
       return rutaRepository.findAll();
    }
 
+   public List<Ruta> buscarRutasPorCoordenadas(Float x_1,Float x_2,Float y_1 ,Float y_2) throws Exception{
+        List<Ruta> rutas = rutaRepository.buscarPorRangoDeFecha(x_1,x_2,y_1,y_2);
+        return rutas;
+   }
+
    public Ruta crearRuta(Ruta ruta) {
       return rutaRepository.save(ruta);
    }

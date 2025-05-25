@@ -17,6 +17,7 @@ import com.perfulandia.cl.logistica.service.RutaService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api/v1/logistica/envios/rutas")
@@ -41,6 +42,26 @@ public class RutaController {
         }
     }
 
+    @GetMapping("/{x_1}/{x_2}/{y_1}/{y_2}")
+    public ResponseEntity<?> getRutaByCoords(@PathVariable Float x_1,
+            @PathVariable Float x_2,
+            @PathVariable Float y_1,
+            @PathVariable Float y_2) {
+
+        try {
+            List<Ruta> rutasEncontradas = rutaService.buscarRutasPorCoordenadas(x_1, x_2, y_1, y_2);
+            if(rutasEncontradas.size() == 0){
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+
+            return ResponseEntity.ok(rutasEncontradas);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        
+    }
+
     @PostMapping("")
     public ResponseEntity<?> createRuta(@RequestBody Ruta nuevaRuta) {
 
@@ -62,7 +83,7 @@ public class RutaController {
         }
     }
 
-    @PutMapping("/{idRuta}")
+    @PatchMapping("/{idRuta}")
     public ResponseEntity<?> patchRuta(@RequestBody Ruta ruta, @PathVariable Integer idRuta) {
         try {
             Ruta rutaActualizada = rutaService.parcharRuta(ruta, idRuta);
