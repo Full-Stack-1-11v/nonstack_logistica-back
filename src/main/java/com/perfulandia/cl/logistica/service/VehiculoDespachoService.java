@@ -22,11 +22,7 @@ public class VehiculoDespachoService {
     
     @Transactional
     public VehiculoDespacho registrarVehiculoDespacho(VehiculoDespacho vehiculo) {
-        VehiculoDespacho vehiculoExistente = vehiculoDespachoRepository.findByPatente(vehiculo.getPatente()); // Puede
-                                                                                                              // devolver
-                                                                                                              // null si
-                                                                                                              // no
-                                                                                                              // encuentra!
+        VehiculoDespacho vehiculoExistente = vehiculoDespachoRepository.findByPatente(vehiculo.getPatente());
         if (vehiculoExistente == null) {
             vehiculoDespachoRepository.save(vehiculo);
             return vehiculo;

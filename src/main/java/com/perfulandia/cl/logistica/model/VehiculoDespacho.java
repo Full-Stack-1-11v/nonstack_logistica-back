@@ -2,6 +2,7 @@ package com.perfulandia.cl.logistica.model;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -30,6 +31,7 @@ public class VehiculoDespacho {
     @Column(name = "ano" , nullable = false , length = 4)
     private Integer ano;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "vehiculoDespacho" , cascade = CascadeType.ALL , orphanRemoval = true)
     private List<Envio> envios;
 }
