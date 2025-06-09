@@ -16,6 +16,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.perfulandia.cl.logistica.model.Envio;
@@ -292,6 +294,7 @@ public class VehiculoDespachoTest {
 
         try {
             vehiculoDespachoService.borrarVehiculoDespacho(patenteExistente);
+            verify(vehiculoDespachoRepository,times(1)).deleteByPatente(patenteExistente);
         } catch (Exception e) {
             fail("No se esperaba una excepcion, pero igual ocurrio..." + e.getMessage());
         }

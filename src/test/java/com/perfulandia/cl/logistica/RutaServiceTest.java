@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -224,10 +226,10 @@ public class RutaServiceTest {
             Ruta rutaParchada = rutaService.parcharRuta(patchRutaMock, idRutaMock);
             assertNotNull(rutaParchada);
             assertThat(rutaParchada)
-                    .hasFieldOrPropertyWithValue("coordXInicio", rutaParchada.getCoordXInicio())
-                    .hasFieldOrPropertyWithValue("coordXFinal", rutaParchada.getCoordXFinal())
-                    .hasFieldOrPropertyWithValue("coordYInicio", rutaParchada.getCoordYInicio())
-                    .hasFieldOrPropertyWithValue("coordYFinal", rutaParchada.getCoordYFinal());
+                    .hasFieldOrPropertyWithValue("coordXInicio", patchedRutaMock.getCoordXInicio())
+                    .hasFieldOrPropertyWithValue("coordXFinal", patchedRutaMock.getCoordXFinal())
+                    .hasFieldOrPropertyWithValue("coordYInicio", patchedRutaMock.getCoordYInicio())
+                    .hasFieldOrPropertyWithValue("coordYFinal", patchedRutaMock.getCoordYFinal());
             assertEquals(rutaParchada, patchedRutaMock);
         } catch (Exception e) {
             System.out.println("Error que no debiese ocurrir : " + e.getMessage());
@@ -253,7 +255,7 @@ public class RutaServiceTest {
             Ruta rutaParchada = rutaService.parcharRuta(patchRutaMock, idRutaMock);
             assertNotNull(rutaParchada);
             assertThat(rutaParchada)
-                    .hasFieldOrPropertyWithValue("coordXInicio", patchRutaMock.getCoordXInicio());
+                    .hasFieldOrPropertyWithValue("coordXInicio", patchedRutaMock.getCoordXInicio());
             assertEquals(rutaParchada, patchedRutaMock);
         } catch (Exception e) {
             System.out.println("Error que no debiese ocurrir : " + e.getMessage());
@@ -278,7 +280,7 @@ public class RutaServiceTest {
             Ruta rutaParchada = rutaService.parcharRuta(patchRutaMock, idRutaMock);
             assertNotNull(rutaParchada);
             assertThat(rutaParchada)
-                    .hasFieldOrPropertyWithValue("coordYInicio", patchRutaMock.getCoordYInicio());
+                    .hasFieldOrPropertyWithValue("coordYInicio", patchedRutaMock.getCoordYInicio());
             assertEquals(rutaParchada, patchedRutaMock);
         } catch (Exception e) {
             System.out.println("Error que no debiese ocurrir : " + e.getMessage());
@@ -303,7 +305,7 @@ public class RutaServiceTest {
             Ruta rutaParchada = rutaService.parcharRuta(patchRutaMock, idRutaMock);
             assertNotNull(rutaParchada);
             assertThat(rutaParchada)
-                    .hasFieldOrPropertyWithValue("coordXFinal", patchRutaMock.getCoordXFinal());
+                    .hasFieldOrPropertyWithValue("coordXFinal", patchedRutaMock.getCoordXFinal());
             assertEquals(rutaParchada, patchedRutaMock);
         } catch (Exception e) {
             System.out.println("Error que no debiese ocurrir : " + e.getMessage());
@@ -328,7 +330,7 @@ public class RutaServiceTest {
             Ruta rutaParchada = rutaService.parcharRuta(patchRutaMock, idRutaMock);
             assertNotNull(rutaParchada);
             assertThat(rutaParchada)
-                    .hasFieldOrPropertyWithValue("coordYFinal", patchRutaMock.getCoordYFinal());
+                    .hasFieldOrPropertyWithValue("coordYFinal", patchedRutaMock.getCoordYFinal());
             assertEquals(rutaParchada, patchedRutaMock);
         } catch (Exception e) {
             System.out.println("Error que no debiese ocurrir : " + e.getMessage());
@@ -353,10 +355,10 @@ public class RutaServiceTest {
             Ruta rutaParchada = rutaService.parcharRuta(patchRutaMock, idRutaMock);
             assertNotNull(rutaParchada);
             assertThat(rutaParchada)
-                    .hasFieldOrPropertyWithValue("coordXInicio", patchRutaMock.getCoordXInicio())
-                    .hasFieldOrPropertyWithValue("coordYInicio", patchRutaMock.getCoordYInicio())
-                    .hasFieldOrPropertyWithValue("coordXFinal", patchRutaMock.getCoordXFinal())
-                    .hasFieldOrPropertyWithValue("coordYFinal", patchRutaMock.getCoordYFinal());
+                    .hasFieldOrPropertyWithValue("coordXInicio", patchedRutaMock.getCoordXInicio())
+                    .hasFieldOrPropertyWithValue("coordYInicio", patchedRutaMock.getCoordYInicio())
+                    .hasFieldOrPropertyWithValue("coordXFinal", patchedRutaMock.getCoordXFinal())
+                    .hasFieldOrPropertyWithValue("coordYFinal", patchedRutaMock.getCoordYFinal());
             assertEquals(rutaParchada, patchedRutaMock);
         } catch (Exception e) {
             System.out.println("Error que no debiese ocurrir : " + e.getMessage());
@@ -382,10 +384,10 @@ public class RutaServiceTest {
             assertNotNull(rutaParchada);
             // Add assertions to verify that no coordinates were changed
             assertThat(rutaParchada)
-                    .hasFieldOrPropertyWithValue("coordXInicio", rutaExistente.getCoordXInicio())
-                    .hasFieldOrPropertyWithValue("coordYInicio", rutaExistente.getCoordYInicio())
-                    .hasFieldOrPropertyWithValue("coordXFinal", rutaExistente.getCoordXFinal())
-                    .hasFieldOrPropertyWithValue("coordYFinal", rutaExistente.getCoordYFinal());
+                    .hasFieldOrPropertyWithValue("coordXInicio", patchedRutaMock.getCoordXInicio())
+                    .hasFieldOrPropertyWithValue("coordYInicio", patchedRutaMock.getCoordYInicio())
+                    .hasFieldOrPropertyWithValue("coordXFinal", patchedRutaMock.getCoordXFinal())
+                    .hasFieldOrPropertyWithValue("coordYFinal", patchedRutaMock.getCoordYFinal());
             assertEquals(rutaParchada, patchedRutaMock);
         } catch (Exception e) {
             System.out.println("Error que no debiese ocurrir : " + e.getMessage());
@@ -424,6 +426,7 @@ public class RutaServiceTest {
 
         try {
             rutaService.deleteRuta(idValido);
+            verify(rutaRepository,times(1)).deleteById(idValido);
         } catch (Exception e) {
             System.out.println("Error que no debiese ocurrir : " + e.getMessage());
         }
