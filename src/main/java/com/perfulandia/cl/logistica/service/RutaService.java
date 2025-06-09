@@ -2,6 +2,7 @@ package com.perfulandia.cl.logistica.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,8 @@ public class RutaService {
         if(!rutaRepository.existsById(idRuta)){
             throw new RuntimeException("No existe la ruta con id: " + idRuta);
         } else {
-            Ruta rutaExistente = rutaRepository.findById(idRuta).get();
+            Optional<Ruta> rutaExistenteOptional = rutaRepository.findById(idRuta);
+            Ruta rutaExistente = rutaExistenteOptional.get();
             rutaExistente.setCoordXInicio(ruta.getCoordXInicio());
             rutaExistente.setCoordYInicio(ruta.getCoordYInicio());
             rutaExistente.setCoordXFinal(ruta.getCoordXFinal());
@@ -44,7 +46,8 @@ public class RutaService {
         if(!rutaRepository.existsById(idRuta)){
             throw new RuntimeException("No existe la ruta con id: " + idRuta);
         } else {
-            Ruta rutaExistente = rutaRepository.findById(idRuta).get();
+            Optional<Ruta> rutaExistenteOptional = rutaRepository.findById(idRuta);
+            Ruta rutaExistente = rutaExistenteOptional.get();
             if(ruta.getCoordXInicio() != null){
                 rutaExistente.setCoordXInicio(ruta.getCoordXInicio());
             }
