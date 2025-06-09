@@ -27,16 +27,16 @@ public class Ruta {
     private Integer idRuta;
 
     @Column(name = "coord_x_inicio", nullable = false)
-    private float coordXInicio;
+    private Float coordXInicio;
 
     @Column(name = "coord_y_inicio", nullable = false)
-    private float coordYInicio;
+    private Float coordYInicio;
 
     @Column(name = "coord_x_final", nullable = false)
-    private float coordXFinal;
+    private Float coordXFinal;
 
     @Column(name = "coord_y_final", nullable = false)
-    private float coordYFinal;
+    private Float coordYFinal;
 
     @OneToMany(mappedBy = "ruta" , cascade = CascadeType.ALL , orphanRemoval = true)
     @JsonIgnore
