@@ -36,11 +36,12 @@ public class GuiaDespachoService {
         if (!guiaDespachoRepository.existsById(id)) {
             throw new RuntimeException("El despacho no existe");
         } else {
-            Optional<GuiaDespacho> guiaDespachoExistente = guiaDespachoRepository.findById(id);
-            guiaDespachoExistente.get().setIdEnvio(guiaDespacho.getIdEnvio());
-            guiaDespachoExistente.get().setIdOrden(guiaDespacho.getIdOrden());
-            guiaDespachoRepository.save(guiaDespachoExistente.get());
-            return guiaDespachoExistente.get();
+            Optional<GuiaDespacho> guiaDespachoExistenteOptional = guiaDespachoRepository.findById(id);
+            GuiaDespacho guiaDespachoExistente = guiaDespachoExistenteOptional.get();
+            guiaDespachoExistente.setIdEnvio(guiaDespacho.getIdEnvio());
+            guiaDespachoExistente.setIdOrden(guiaDespacho.getIdOrden());
+            guiaDespachoRepository.save(guiaDespachoExistente);
+            return guiaDespachoExistente;
         }
     }
 
@@ -50,19 +51,20 @@ public class GuiaDespachoService {
         if (!guiaDespachoRepository.existsById(id)) {
             throw new RuntimeCryptoException("El despacho no existe");
         } else {
-            Optional<GuiaDespacho> guiaDespachoExistente = guiaDespachoRepository.findById(id);
+            Optional<GuiaDespacho> guiaDespachoExistenteOptional = guiaDespachoRepository.findById(id);
+            GuiaDespacho guiaDespachoExistente = guiaDespachoExistenteOptional.get();
             if (guiaDespacho.getIdOrden() == null && guiaDespacho.getIdEnvio() == null) {
                 throw new RuntimeException("Debe de haber almenos un atributo para parchar");
             }
             if (guiaDespacho.getIdEnvio() != null) {
-                guiaDespachoExistente.get().setIdEnvio(guiaDespacho.getIdEnvio());
+                guiaDespachoExistente.setIdEnvio(guiaDespacho.getIdEnvio());
             }
             if (guiaDespacho.getIdOrden() != null) {
-                guiaDespachoExistente.get().setIdOrden(guiaDespacho.getIdOrden());
+                guiaDespachoExistente.setIdOrden(guiaDespacho.getIdOrden());
             }
 
-            guiaDespachoRepository.save(guiaDespachoExistente.get());
-            return guiaDespachoExistente.get();
+            guiaDespachoRepository.save(guiaDespachoExistente);
+            return guiaDespachoExistente;
         }
     }
 

@@ -151,7 +151,7 @@ public class VehiculoDespachoTest {
 
     @Test
     @DisplayName("parcharVehiculoDespacho devuelve objeto parchado con año actualizada")
-    public void patchVehiculoSoloAno() {
+    public void patchVehiculoSoloAno() throws Exception {
 
         String patenteExistente = "BB-11";
         VehiculoDespacho vehiculoExistente = new VehiculoDespacho(1, patenteExistente, 2020, enviosMock);
@@ -162,23 +162,19 @@ public class VehiculoDespachoTest {
         when(vehiculoDespachoRepository.findByPatente(patenteExistente)).thenReturn(vehiculoExistente);
         when(vehiculoDespachoRepository.save(vehiculoExistente)).thenReturn(vehiculoExistente);
 
-        try {
-            VehiculoDespacho vehiculoParchado = vehiculoDespachoService.parcharVehiculoDespacho(vehiculoConNuevosDatos,
-                    patenteExistente);
+        VehiculoDespacho vehiculoParchado = vehiculoDespachoService.parcharVehiculoDespacho(vehiculoConNuevosDatos,
+                patenteExistente);
 
-            // Assert
-            assertNotNull(vehiculoParchado);
-            assertEquals(2023, vehiculoParchado.getAno());
-            assertEquals(patenteExistente, vehiculoParchado.getPatente());
-        } catch (Exception e) {
-            fail("No se esperaba una excepcion, pero igual ocurrio..." + e.getMessage());
-        }
+        // Assert
+        assertNotNull(vehiculoParchado);
+        assertEquals(2023, vehiculoParchado.getAno());
+        assertEquals(patenteExistente, vehiculoParchado.getPatente());
 
     }
 
     @Test
     @DisplayName("parcharVehiculoDespacho devuelve objeto parchado con patente actualizada")
-    public void patchVehiculoSoloPatente() {
+    public void patchVehiculoSoloPatente() throws Exception {
 
         String patenteExistente = "BB-11";
         VehiculoDespacho vehiculoExistente = new VehiculoDespacho(1, patenteExistente, 2020, enviosMock);
@@ -190,22 +186,18 @@ public class VehiculoDespachoTest {
         when(vehiculoDespachoRepository.findByPatente(patenteExistente)).thenReturn(vehiculoExistente);
         when(vehiculoDespachoRepository.save(vehiculoExistente)).thenReturn(vehiculoExistente);
 
-        try {
-            VehiculoDespacho vehiculoParchado = vehiculoDespachoService.parcharVehiculoDespacho(vehiculoConNuevosDatos,
-                    patenteExistente);
+        VehiculoDespacho vehiculoParchado = vehiculoDespachoService.parcharVehiculoDespacho(vehiculoConNuevosDatos,
+                patenteExistente);
 
-            // Assert
-            assertNotNull(vehiculoParchado);
-            assertEquals("AA-11", vehiculoParchado.getPatente());
-        } catch (Exception e) {
-            fail("No se esperaba una excepcion, pero igual ocurrio..." + e.getMessage());
-        }
+        // Assert
+        assertNotNull(vehiculoParchado);
+        assertEquals("AA-11", vehiculoParchado.getPatente());
 
     }
 
     @Test
     @DisplayName("parcharVehiculoDespacho devuelve objeto parchado con año y patente actualizadas")
-    public void patchVehiculoFull() { // Trae anio y patente
+    public void patchVehiculoFull() throws Exception { // Trae anio y patente
 
         String patenteExistente = "BB-11";
         VehiculoDespacho vehiculoExistente = new VehiculoDespacho(1, patenteExistente, 2020, enviosMock);
@@ -217,17 +209,13 @@ public class VehiculoDespachoTest {
         when(vehiculoDespachoRepository.findByPatente(patenteExistente)).thenReturn(vehiculoExistente);
         when(vehiculoDespachoRepository.save(vehiculoExistente)).thenReturn(vehiculoExistente);
 
-        try {
-            VehiculoDespacho vehiculoParchado = vehiculoDespachoService.parcharVehiculoDespacho(vehiculoConNuevosDatos,
-                    patenteExistente);
+        VehiculoDespacho vehiculoParchado = vehiculoDespachoService.parcharVehiculoDespacho(vehiculoConNuevosDatos,
+                patenteExistente);
 
-            // Assert
-            assertNotNull(vehiculoParchado);
-            assertEquals("AA-11", vehiculoParchado.getPatente());
-            assertEquals(2025, vehiculoParchado.getAno());
-        } catch (Exception e) {
-            fail("No se esperaba una excepcion, pero igual ocurrio..." + e.getMessage());
-        }
+        // Assert
+        assertNotNull(vehiculoParchado);
+        assertEquals("AA-11", vehiculoParchado.getPatente());
+        assertEquals(2025, vehiculoParchado.getAno());
 
     }
 
@@ -247,33 +235,28 @@ public class VehiculoDespachoTest {
 
     @Test
     @DisplayName("buscarVehiculoPorPatronPatente devuelve una lista de elementos")
-    public void searchVehiculoSuccessful(){
+    public void searchVehiculoSuccessful() throws Exception {
         // Arrange
         String patenteCorrecta = "BB";
-        List<VehiculoDespacho> vehiculosResultantes = vehiculosMock.
-                stream()
+        List<VehiculoDespacho> vehiculosResultantes = vehiculosMock.stream()
                 .filter(vehiculo -> "BB-11".equals(vehiculo.getPatente()))
                 .collect(Collectors.toList());
-        
+
         when(vehiculoDespachoRepository.buscarPorPatronPatente(patenteCorrecta)).thenReturn(vehiculosResultantes);
 
-
         // Act
-        try {
-            List<VehiculoDespacho> vehiculosEncontrados = vehiculoDespachoService.buscarVehiculoPorPatronPatente(patenteCorrecta);
 
-            assertNotNull(vehiculosEncontrados);
-            assertEquals(2, vehiculosEncontrados.size());
-        } catch (Exception e) {
-           fail("No se esperaba una excepcion, pero igual ocurrio..." + e.getMessage());
-        }
-        
+        List<VehiculoDespacho> vehiculosEncontrados = vehiculoDespachoService
+                .buscarVehiculoPorPatronPatente(patenteCorrecta);
+
+        assertNotNull(vehiculosEncontrados);
+        assertEquals(2, vehiculosEncontrados.size());
 
     }
 
     @Test
     @DisplayName("borrarVehiculoDespacho arroja RuntimeException si patente no existe")
-    public void deleteVehiculoPatenteDoesntExist(){
+    public void deleteVehiculoPatenteDoesntExist() {
         // Arrange
         String patenteNoExistente = "UGABUGA-69";
         when(vehiculoDespachoRepository.existsByPatente(patenteNoExistente)).thenReturn(false);
@@ -287,16 +270,12 @@ public class VehiculoDespachoTest {
 
     @Test
     @DisplayName("borrarVehiculoDespacho se ejecuta si la patente existe")
-    public void deleteVehiculoSuccessful(){
+    public void deleteVehiculoSuccessful() throws Exception {
         // Arrange
         String patenteExistente = "BB-11";
         when(vehiculoDespachoRepository.existsByPatente(patenteExistente)).thenReturn(true);
 
-        try {
-            vehiculoDespachoService.borrarVehiculoDespacho(patenteExistente);
-            verify(vehiculoDespachoRepository,times(1)).deleteByPatente(patenteExistente);
-        } catch (Exception e) {
-            fail("No se esperaba una excepcion, pero igual ocurrio..." + e.getMessage());
-        }
+        vehiculoDespachoService.borrarVehiculoDespacho(patenteExistente);
+        verify(vehiculoDespachoRepository, times(1)).deleteByPatente(patenteExistente);
     }
 }
