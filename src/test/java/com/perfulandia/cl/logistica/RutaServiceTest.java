@@ -137,7 +137,7 @@ public class RutaServiceTest {
     }
 
     @Test
-    public void putRutaSuccessful() throws Exception {
+    public void putRutaSuccessful() {
         Integer idRutaMock = 1;
         Ruta putRutaMock = new Ruta(idRutaMock, -25F, -30F, -35F, -40F, null); // id no importa para el put
         Optional<Ruta> optionalRutaMock = Optional.of(rutaMock);
@@ -192,7 +192,7 @@ public class RutaServiceTest {
     }
 
     @Test
-    public void patchRutSuccessful() throws Exception {
+    public void patchRutSuccessful() {
         Integer idRutaMock = 1;
         Ruta rutaExistente = new Ruta(1, 22F, 33F, 21F, 15F, null);
         Ruta patchRutaMock = new Ruta(1, null, null, 21F, 15F, null);
@@ -222,7 +222,7 @@ public class RutaServiceTest {
     }
 
     @Test
-    public void patchRutSuccessful_coordXInicio() throws Exception {
+    public void patchRutSuccessful_coordXInicio() {
         Integer idRutaMock = 1;
         Ruta rutaExistente = new Ruta(1, 22F, 33F, 21F, 15F, null);
         Ruta patchRutaMock = new Ruta(1, 44F, null, null, null, null); // Solo coordXInicio no nulo
@@ -243,7 +243,7 @@ public class RutaServiceTest {
     }
 
     @Test
-    public void patchRutSuccessful_coordYInicio() throws Exception {
+    public void patchRutSuccessful_coordYInicio() {
         Integer idRutaMock = 1;
         Ruta rutaExistente = new Ruta(1, 22F, 33F, 21F, 15F, null);
         Ruta patchRutaMock = new Ruta(1, null, 44F, null, null, null); // Solo coordYInicio no nulo
@@ -264,7 +264,7 @@ public class RutaServiceTest {
     }
 
     @Test
-    public void patchRutSuccessful_coordXFinal() throws Exception {
+    public void patchRutSuccessful_coordXFinal() {
         Integer idRutaMock = 1;
         Ruta rutaExistente = new Ruta(1, 22F, 33F, 21F, 15F, null);
         Ruta patchRutaMock = new Ruta(1, null, null, 44F, null, null); // Solo coordXFinal no nulo
@@ -286,7 +286,7 @@ public class RutaServiceTest {
     }
 
     @Test
-    public void patchRutSuccessful_coordYFinal() throws Exception {
+    public void patchRutSuccessful_coordYFinal() {
         Integer idRutaMock = 1;
         Ruta rutaExistente = new Ruta(1, 22F, 33F, 21F, 15F, null);
         Ruta patchRutaMock = new Ruta(1, null, null, null, 44F, null); // Solo coordYFinal no nulo
@@ -307,7 +307,7 @@ public class RutaServiceTest {
     }
 
     @Test
-    public void patchRutSuccessful_allCoords() throws Exception {
+    public void patchRutSuccessful_allCoords() {
         Integer idRutaMock = 1;
         Ruta rutaExistente = new Ruta(1, 22F, 33F, 21F, 15F, null);
         Ruta patchRutaMock = new Ruta(1, 44F, 55F, 66F, 77F, null); // Todas las coordenadas no nulas
@@ -331,7 +331,7 @@ public class RutaServiceTest {
     }
 
     @Test
-    public void patchRutSuccessful_noCoords() throws Exception {
+    public void patchRutSuccessful_noCoords() {
         Integer idRutaMock = 1;
         Ruta rutaExistente = new Ruta(1, 22F, 33F, 21F, 15F, null);
         Ruta patchRutaMock = new Ruta(1, null, null, null, null, null); // Todas las coordenadas nulas
@@ -381,7 +381,7 @@ public class RutaServiceTest {
     }
 
     @Test
-    public void deleteRutaSuccessfull() throws Exception {
+    public void deleteRutaSuccessfull() {
         Integer idValido = 1;
         when(rutaRepository.existsById(idValido)).thenReturn(true);
 

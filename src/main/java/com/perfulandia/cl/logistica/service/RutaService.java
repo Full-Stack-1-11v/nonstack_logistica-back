@@ -28,7 +28,7 @@ public class RutaService {
       return rutaRepository.save(ruta);
    }
 
-   public Ruta putRuta(Ruta ruta, Integer idRuta) throws Exception{
+   public Ruta putRuta(Ruta ruta, Integer idRuta) {
         if(!rutaRepository.existsById(idRuta)){
             throw new RuntimeException("No existe la ruta con id: " + idRuta);
         } else {
@@ -42,7 +42,7 @@ public class RutaService {
         }
    }
 
-   public Ruta parcharRuta(Ruta ruta, Integer idRuta) throws Exception{
+   public Ruta parcharRuta(Ruta ruta, Integer idRuta) {
         if(!rutaRepository.existsById(idRuta)){
             throw new RuntimeException("No existe la ruta con id: " + idRuta);
         } else {
@@ -65,7 +65,7 @@ public class RutaService {
         }
    }
 
-   public void deleteRuta(Integer idRuta) throws Exception{
+   public void deleteRuta(Integer idRuta) {
         if(!rutaRepository.existsById(idRuta)){
             throw new RuntimeException("No existe la ruta con id: " + idRuta);
         } else {

@@ -44,7 +44,7 @@ public class VehiculoDespachoService {
     }
 
     @Transactional
-    public VehiculoDespacho parcharVehiculoDespacho(VehiculoDespacho vehiculo, String patente) throws Exception {
+    public VehiculoDespacho parcharVehiculoDespacho(VehiculoDespacho vehiculo, String patente) {
         if (!vehiculoDespachoRepository.existsByPatente(patente)) {
             throw new RuntimeException("Vehiculo con la patente : " + patente + " no existe.");
         } else {
@@ -67,7 +67,7 @@ public class VehiculoDespachoService {
 
     }
 
-    public List<VehiculoDespacho> buscarVehiculoPorPatronPatente(String patente) throws Exception{
+    public List<VehiculoDespacho> buscarVehiculoPorPatronPatente(String patente) {
         if(patente.length() != 2){
             throw new RuntimeException("Se deben de colocar dos valores alfanumericos como patron inicial");
         }
@@ -78,7 +78,7 @@ public class VehiculoDespachoService {
     }
 
     @Transactional
-    public void borrarVehiculoDespacho(String patente) throws Exception{
+    public void borrarVehiculoDespacho(String patente) {
         if(!vehiculoDespachoRepository.existsByPatente(patente)){
             throw new RuntimeException("Vehiculo con la patente + " + patente + " no existe");
         } else {

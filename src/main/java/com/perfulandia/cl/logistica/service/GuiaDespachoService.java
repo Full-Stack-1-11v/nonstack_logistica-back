@@ -24,14 +24,14 @@ public class GuiaDespachoService {
     }
     
     @Transactional
-    public GuiaDespacho crearGuiaDespacho(GuiaDespacho nuevaGuiaDespacho) throws Exception {
+    public GuiaDespacho crearGuiaDespacho(GuiaDespacho nuevaGuiaDespacho) {
 
         return guiaDespachoRepository.save(nuevaGuiaDespacho);
 
     }
 
     @Transactional
-    public GuiaDespacho putGuiaDespacho(GuiaDespacho guiaDespacho, Integer id) throws Exception {
+    public GuiaDespacho putGuiaDespacho(GuiaDespacho guiaDespacho, Integer id) {
 
         if (!guiaDespachoRepository.existsById(id)) {
             throw new RuntimeException("El despacho no existe");
@@ -46,7 +46,7 @@ public class GuiaDespachoService {
     }
 
     @Transactional
-    public GuiaDespacho parcharGuiaDespacho(GuiaDespacho guiaDespacho, Integer id) throws Exception {
+    public GuiaDespacho parcharGuiaDespacho(GuiaDespacho guiaDespacho, Integer id) {
 
         if (!guiaDespachoRepository.existsById(id)) {
             throw new RuntimeCryptoException("El despacho no existe");
@@ -69,7 +69,7 @@ public class GuiaDespachoService {
     }
 
     @Transactional
-    public void borrarGuiaDespacho(Integer id) throws Exception {
+    public void borrarGuiaDespacho(Integer id) {
         if (guiaDespachoRepository.existsById(id)) {
             Optional<GuiaDespacho> guiaDespachoBorrar = guiaDespachoRepository.findById(id);
             guiaDespachoRepository.delete(guiaDespachoBorrar.get());

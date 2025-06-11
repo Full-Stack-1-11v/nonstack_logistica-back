@@ -35,7 +35,7 @@ public class EnvioService {
         return envioRepository.save(envio);
     }
 
-    public Envio actualizarEnvio(Integer id, Envio envio) throws Exception {
+    public Envio actualizarEnvio(Integer id, Envio envio) {
         Optional<Envio> envioOpcional = envioRepository.findById(id);
 
         if (envioOpcional.isPresent()) {
@@ -52,7 +52,7 @@ public class EnvioService {
         }
     }
 
-    public Envio parcharEnvio(Integer id, Envio envio) throws Exception {
+    public Envio parcharEnvio(Integer id, Envio envio) {
         if (!envioRepository.existsById(id)) {
             throw new RuntimeException("El envio no existe con esa id :" + id);
         }
@@ -88,12 +88,12 @@ public class EnvioService {
         return envioRepository.save(envioExistente);
     }
 
-    public List<Envio> buscarEnvioPorRangoDeFecha(LocalDate fechaInicial , LocalDate fechaFinal) throws Exception{
+    public List<Envio> buscarEnvioPorRangoDeFecha(LocalDate fechaInicial , LocalDate fechaFinal){
         List<Envio> enviosEncontrados = envioRepository.buscarPorRangoDeFecha(fechaInicial, fechaFinal);
         return enviosEncontrados;
     }
 
-    public void eliminarEnvio(Integer id) throws Exception {
+    public void eliminarEnvio(Integer id) {
         Optional<Envio> envioExistente = envioRepository.findById(id);
         if (envioExistente.isPresent()) {
             envioRepository.deleteById(id);

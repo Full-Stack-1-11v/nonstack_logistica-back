@@ -9,6 +9,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+import com.perfulandia.cl.logistica.model.Envio;
 import com.perfulandia.cl.logistica.model.GuiaDespacho;
 import com.perfulandia.cl.logistica.repository.GuiaDespachoRepository;
 import com.perfulandia.cl.logistica.service.GuiaDespachoService;
@@ -242,8 +244,9 @@ public class GuiaDespachoServiceTest {
         verify(guiaDespachoRepository, times(1)).save(any(GuiaDespacho.class));
 
     }
+
     @Test
-    public void deleteGuiaDespachoSuccessful() throws Exception{
+    public void deleteGuiaDespachoSuccessful() throws Exception {
         Integer idExistente = 1;
         GuiaDespacho guiaDespachoExistente = new GuiaDespacho(1, 1, 1, null);
         Optional<GuiaDespacho> guiaDespachoExistenteOptional = Optional.of(guiaDespachoExistente);
@@ -252,21 +255,23 @@ public class GuiaDespachoServiceTest {
 
         guiaDespachoService.borrarGuiaDespacho(idExistente);
 
-        verify(guiaDespachoRepository,times(1)).delete(guiaDespachoExistente);
+        verify(guiaDespachoRepository, times(1)).delete(guiaDespachoExistente);
 
     }
 
     @Test
-    public void deleteGuiaDespacho_NonExistingId_ReturnsRunTimeException(){
+    public void deleteGuiaDespacho_NonExistingId_ReturnsRunTimeException() {
         Integer idNoExistente = 555;
         when(guiaDespachoRepository.existsById(idNoExistente)).thenReturn(false);
 
-        RuntimeException exception = assertThrows(RuntimeException.class, ()->{
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             guiaDespachoService.borrarGuiaDespacho(idNoExistente);
         });
 
         assertEquals("No existe la guia de despacho con esa id.", exception.getMessage());
     }
+
+    
 
     // Metodo que simula un put
     public GuiaDespacho guiaDespachoMockPut(GuiaDespacho guiaDespachoExistente, GuiaDespacho guiaPut) {
