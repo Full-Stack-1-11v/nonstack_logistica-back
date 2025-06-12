@@ -2,6 +2,8 @@ package com.perfulandia.cl.logistica.model;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
@@ -38,7 +40,7 @@ public class Envio {
     private Integer idOrden;
 
     @Column(name = "fecha_entrega", nullable = false)
-    @Schema(description = "Fecha de cuando se realizo la entrega",example = "30/10/1991")
+    @Schema(description = "Fecha de cuando se realizo la entrega",example = "30-10-1991")
     @Temporal(TemporalType.DATE)
     private LocalDate fechaEntrega;
 
@@ -52,16 +54,19 @@ public class Envio {
 
     @ManyToOne
     @JoinColumn(name = "id_despacho", nullable = false)
+    @JsonIgnore
     @Schema(description = "Guia de despacho relacionada",example = "1")
     private GuiaDespacho guiaDespacho;
 
     @ManyToOne
     @JoinColumn(name = "id_vehiculo", nullable = false)
+    @JsonIgnore
     @Schema(description = "Vehiculo de despacho relacionado",example = "1")
     private VehiculoDespacho vehiculoDespacho;
 
     @ManyToOne
     @JoinColumn(name = "id_ruta",nullable = false)
+    @JsonIgnore
     @Schema(description = "Id de la ruta relacionada",example = "02")
     private Ruta ruta;
 

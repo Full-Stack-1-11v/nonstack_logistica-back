@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/api/v1/logistica/envios")
-@Tag(name = "Envios", description = "Operaciones relacionadas a la logistica de Perfulandia")
+@Tag(name = "Envios", description = "Operaciones relacionadas a los envios de Perfulandia")
 public class EnvioController {
 
     @Autowired
@@ -42,8 +42,8 @@ public class EnvioController {
     @GetMapping("")
     @Operation(summary = "Obtener todos los envios", description = "Obtiene una lista de todas las carreras")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Operacion exitosa, los envios encontrados", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Envio.class))),
-            @ApiResponse(responseCode = "404", description = "No se encontraron carreras")
+            @ApiResponse(responseCode = "200", description = "Operacion exitosa, devuelve los envios encontrados", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Envio.class))),
+            @ApiResponse(responseCode = "404", description = "No se encontraron envios")
     })
     public ResponseEntity<?> getEnvios() {
         List<Envio> envios = envioService.obtenerEnvios();
@@ -80,7 +80,7 @@ public class EnvioController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Operacion exitosa, devuelve los envios encontradas en ese rango de fecha"
                         , content = @Content(mediaType = "application/json", schema = @Schema(implementation = Envio.class))),
-            @ApiResponse(responseCode = "404", description = "No se encontraron envios en ese rango de fecha.")
+            @ApiResponse(responseCode = "400", description = "Request incorrecto")
     })
     public ResponseEntity<?> findEnvioByDate(
             @Parameter(description = "Fecha inicial (inclusive)", required = true , example = "2023-04-01") @PathVariable LocalDate fechaInicio,
@@ -129,7 +129,7 @@ public class EnvioController {
     @PutMapping("/{id}")
     @Operation(summary = "Actualiza un envio a traves de un body y la id")
         @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Operacion exitosa, devuelve el envio actualizado."
+            @ApiResponse(responseCode = "200", description = "Operacion exitosa, devuelve el envio actualizado."
                         , content = @Content(mediaType = "application/json", schema = @Schema(implementation = Envio.class))),
             @ApiResponse(responseCode = "404", description = "No se encontro el envio.")
     })

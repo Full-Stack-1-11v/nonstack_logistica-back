@@ -13,8 +13,8 @@ public class SwaggerConfig {
     public OpenAPI customOpenAPI(){
         return new OpenAPI()
             .info(new Info()
-                .title("API Microservicio Envios Perfulandia")
+                .title("API Microservicio Logistica Perfulandia")
                 .version("1.0")
-                .description("Documentacion de la API del microservicio de envios"));
+                .description("Documentacion de la API de microservicios relacionados a la logistica."));
     }
 }
