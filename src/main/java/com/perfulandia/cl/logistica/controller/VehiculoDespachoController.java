@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.perfulandia.cl.logistica.converter.VehiculoDespachoConverter;
 import com.perfulandia.cl.logistica.dto.VehiculoDespachoDTO;
-import com.perfulandia.cl.logistica.model.Envio;
 import com.perfulandia.cl.logistica.model.VehiculoDespacho;
 import com.perfulandia.cl.logistica.service.VehiculoDespachoService;
 

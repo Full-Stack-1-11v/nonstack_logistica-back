@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import com.perfulandia.cl.logistica.controller.EnvioControllerV2;
 import com.perfulandia.cl.logistica.model.Envio;
 
+
 @Component
 public class EnvioModelAssembler implements RepresentationModelAssembler<Envio, EntityModel<Envio>> {
 

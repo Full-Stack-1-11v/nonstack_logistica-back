@@ -7,7 +7,6 @@ import com.perfulandia.cl.logistica.client.OrdenFeignClient;
 import com.perfulandia.cl.logistica.converter.GuiaDespachoConverter;
 import com.perfulandia.cl.logistica.dto.GuiaDespachoDTO;
 import com.perfulandia.cl.logistica.dto.OrdenDTO;
-import com.perfulandia.cl.logistica.model.Envio;
 import com.perfulandia.cl.logistica.model.GuiaDespacho;
 import com.perfulandia.cl.logistica.service.GuiaDespachoService;
 import com.perfulandia.cl.logistica.service.OrdenDTOService;
@@ -61,7 +60,7 @@ public class GuiaDespachoController {
             }
 
             List<GuiaDespachoDTO> despachosDTO = despachos.stream()
-                    .map(guia -> GuiaDespachoConverter.convertToDTO(guia, guia.getIdOrden(), ordenClient))
+                    .map(guia -> GuiaDespachoConverter.convertToDTO(guia, ordenClient))
                     .collect(Collectors.toList());
 
             return new ResponseEntity<>(despachosDTO, HttpStatus.OK);

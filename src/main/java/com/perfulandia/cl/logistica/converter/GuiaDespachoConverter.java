@@ -12,12 +12,12 @@ import com.perfulandia.cl.logistica.model.GuiaDespacho;
 public class GuiaDespachoConverter {
 
 
-    public static GuiaDespachoDTO convertToDTO(GuiaDespacho guiaDespacho,Integer id,OrdenFeignClient ordenClient){
+    public static GuiaDespachoDTO convertToDTO(GuiaDespacho guiaDespacho,OrdenFeignClient ordenClient){
         GuiaDespachoDTO dto = new GuiaDespachoDTO();
         dto.setIdEnvio(guiaDespacho.getIdEnvio());
         dto.setIdOrden(guiaDespacho.getIdOrden());
         dto.setIdDespacho(guiaDespacho.getIdDespacho());
-        dto.setDatosOrden(ordenClient.obtenerOrdenPorId(id));
+        dto.setDatosOrden(ordenClient.obtenerOrdenPorId(guiaDespacho.getIdOrden()));
         if(guiaDespacho.getEnvios() != null){
            List<Integer> envioIds = guiaDespacho.getEnvios().stream()
                 .map(envio -> envio.getIdEnvio())

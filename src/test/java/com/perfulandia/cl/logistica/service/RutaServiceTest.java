@@ -1,4 +1,4 @@
-package com.perfulandia.cl.logistica;
+package com.perfulandia.cl.logistica.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;

@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.perfulandia.cl.logistica.assemblers.EnvioModelAssembler;
-import com.perfulandia.cl.logistica.converter.EnvioConverter;
-import com.perfulandia.cl.logistica.dto.EnvioDTO;
 import com.perfulandia.cl.logistica.model.Envio;
 import com.perfulandia.cl.logistica.service.EnvioService;
 
