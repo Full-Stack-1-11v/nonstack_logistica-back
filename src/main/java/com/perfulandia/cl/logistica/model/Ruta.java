@@ -2,6 +2,7 @@ package com.perfulandia.cl.logistica.model;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -49,5 +50,6 @@ public class Ruta {
     @OneToMany(mappedBy = "ruta" , cascade = CascadeType.ALL , orphanRemoval = true)
     @JsonIgnore
     @ArraySchema(schema = @Schema(implementation = Envio.class))
+    @JsonBackReference
     private List<Envio> envios;
 }

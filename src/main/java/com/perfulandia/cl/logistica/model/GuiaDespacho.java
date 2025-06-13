@@ -2,6 +2,8 @@ package com.perfulandia.cl.logistica.model;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.CascadeType;
@@ -37,6 +39,7 @@ public class GuiaDespacho {
 
     @OneToMany(mappedBy = "guiaDespacho",cascade = CascadeType.ALL , orphanRemoval = true)
     @ArraySchema(schema = @Schema(implementation = Envio.class))
+    @JsonBackReference
     private List<Envio> envios;
 
 }

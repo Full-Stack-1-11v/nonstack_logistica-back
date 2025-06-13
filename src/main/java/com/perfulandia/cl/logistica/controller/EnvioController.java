@@ -78,13 +78,12 @@ public class EnvioController {
     @GetMapping("/buscar-por-fecha/{fechaInicio}/{fechaFin}")
     @Operation(summary = "Obtiene envios en un rango de fecha determinado.", description = "A traves del rango de fecha entrega una lista de envios")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Operacion exitosa, devuelve los envios encontradas en ese rango de fecha"
-                        , content = @Content(mediaType = "application/json", schema = @Schema(implementation = Envio.class))),
+            @ApiResponse(responseCode = "200", description = "Operacion exitosa, devuelve los envios encontradas en ese rango de fecha", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Envio.class))),
             @ApiResponse(responseCode = "400", description = "Request incorrecto")
     })
     public ResponseEntity<?> findEnvioByDate(
-            @Parameter(description = "Fecha inicial (inclusive)", required = true , example = "2023-04-01") @PathVariable LocalDate fechaInicio,
-            @Parameter(description = "Fecha final (inclusive)", required = true , example = "2025-12-12") @PathVariable LocalDate fechaFin) {
+            @Parameter(description = "Fecha inicial (inclusive)", required = true, example = "2023-04-01") @PathVariable LocalDate fechaInicio,
+            @Parameter(description = "Fecha final (inclusive)", required = true, example = "2025-12-12") @PathVariable LocalDate fechaFin) {
         try {
             List<Envio> enviosEncontrados = envioService.buscarEnvioPorRangoDeFecha(fechaInicio, fechaFin);
             List<EnvioDTO> enviosDTO = enviosEncontrados.stream()
@@ -99,23 +98,26 @@ public class EnvioController {
     @PostMapping("")
     @Operation(summary = "Registra un envio a traves de un body")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Operacion exitosa, devuelve el envio registrado."
-                        , content = @Content(mediaType = "application/json", schema = @Schema(implementation = Envio.class))),
+            @ApiResponse(responseCode = "201", description = "Operacion exitosa, devuelve el envio registrado.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Envio.class))),
             @ApiResponse(responseCode = "500", description = "No se pudo registrar(erorr interno)")
     })
     public ResponseEntity<?> crearEnvio(
-        @RequestBody @Schema(description = "Datos del envio a crear", required = true,
-        example = "{\n" +
-                  "  \"idEnvio\": 1,\n" +
-                  "  \"idCliente\": 1,\n" +
-                  "  \"idOrden\": 1,\n" +
-                  "  \"fechaEntrega\": \"2025-06-11\",\n" +
-                  "  \"entregado\": true,\n" +
-                  "  \"observacion\": \"Se entrego al hijo de la persona.\",\n" +
-                  "  \"guiaDespacho\": 1,\n" +
-                  "  \"vehiculoDespacho\": 1,\n" +
-                  "  \"ruta\": \"2\"\n" +
-                  "}") Envio envio) {
+            @RequestBody @Schema(description = "Datos del envio a crear", required = true, example = "{\n" +
+                    "  \"idCliente\": 999,\n" +
+                    "  \"idOrden\": 1,\n" +
+                    "  \"fechaEntrega\": \"2024-12-11\",\n" +
+                    "  \"entregado\": true,\n" +
+                    "  \"observacion\": \"Salio un perro ladrando\",\n" +
+                    "  \"guiaDespacho\": {\n" +
+                    "    \"idDespacho\": 1\n" +
+                    "  },\n" +
+                    "  \"vehiculoDespacho\": {\n" +
+                    "    \"idVehiculoDespacho\": 1\n" +
+                    "  },\n" +
+                    "  \"ruta\": {\n" +
+                    "    \"idRuta\": 1\n" +
+                    "  }\n" +
+                    "}") Envio envio) {
         try {
             Envio nuevoEnvio = envioService.crearEnvio(envio);
             EnvioDTO envioDTO = EnvioConverter.convertToDTO(nuevoEnvio);
@@ -128,26 +130,23 @@ public class EnvioController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Actualiza un envio a traves de un body y la id")
-        @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Operacion exitosa, devuelve el envio actualizado."
-                        , content = @Content(mediaType = "application/json", schema = @Schema(implementation = Envio.class))),
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Operacion exitosa, devuelve el envio actualizado.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Envio.class))),
             @ApiResponse(responseCode = "404", description = "No se encontro el envio.")
     })
     public ResponseEntity<?> actualizarEnvio(
-    @Parameter(description = "Id del envio a actualizar", required = true)    
-    @PathVariable Integer id, 
-    @RequestBody @Schema(description = "Datos de la actualización", required = true,
-        example = "{\n" +
-                  "  \"idEnvio\": 1,\n" +
-                  "  \"idCliente\": 1,\n" +
-                  "  \"idOrden\": 1,\n" +
-                  "  \"fechaEntrega\": \"2025-06-11\",\n" +
-                  "  \"entregado\": true,\n" +
-                  "  \"observacion\": \"Se entrego al hijo de la persona.\",\n" +
-                  "  \"guiaDespacho\": 1,\n" +
-                  "  \"vehiculoDespacho\": 1,\n" +
-                  "  \"ruta\": \"2\"\n" +
-                  "}")Envio envio) {
+            @Parameter(description = "Id del envio a actualizar", required = true) @PathVariable Integer id,
+            @RequestBody @Schema(description = "Datos de la actualización", required = true, example = "{\n" +
+                    "  \"idEnvio\": 1,\n" +
+                    "  \"idCliente\": 1,\n" +
+                    "  \"idOrden\": 1,\n" +
+                    "  \"fechaEntrega\": \"2025-06-11\",\n" +
+                    "  \"entregado\": true,\n" +
+                    "  \"observacion\": \"Se entrego al hijo de la persona.\",\n" +
+                    "  \"guiaDespacho\": 1,\n" +
+                    "  \"vehiculoDespacho\": 1,\n" +
+                    "  \"ruta\": \"2\"\n" +
+                    "}") Envio envio) {
         try {
             Envio envioActualizado = envioService.actualizarEnvio(id, envio);
             if (envioActualizado != null) {
@@ -163,26 +162,23 @@ public class EnvioController {
 
     @PatchMapping("/{id}")
     @Operation(summary = "Parcha un envio a traves de un body y la id")
-        @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Operacion exitosa, devuelve el envio parchado."
-                        , content = @Content(mediaType = "application/json", schema = @Schema(implementation = Envio.class))),
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Operacion exitosa, devuelve el envio parchado.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Envio.class))),
             @ApiResponse(responseCode = "404", description = "No se encontro el envio.")
     })
     public ResponseEntity<?> parcharEnvio(
-        @Parameter(description = "Id del envio a actualizar", required = true)
-        @PathVariable Integer id, 
-        @RequestBody @Schema(description = "Datos de la actualización", required = false,
-        example = "{\n" +
-                  "  \"idEnvio\": 1,\n" +
-                  "  \"idCliente\": 1,\n" +
-                  "  \"idOrden\": 1,\n" +
-                  "  \"fechaEntrega\": \"2025-06-11\",\n" +
-                  "  \"entregado\": true,\n" +
-                  "  \"observacion\": \"Se entrego al hijo de la persona.\",\n" +
-                  "  \"guiaDespacho\": 1,\n" +
-                  "  \"vehiculoDespacho\": 1,\n" +
-                  "  \"ruta\": \"2\"\n" +
-                  "}")Envio envio) {
+            @Parameter(description = "Id del envio a actualizar", required = true) @PathVariable Integer id,
+            @RequestBody @Schema(description = "Datos de la actualización", required = false, example = "{\n" +
+                    "  \"idEnvio\": 1,\n" +
+                    "  \"idCliente\": 1,\n" +
+                    "  \"idOrden\": 1,\n" +
+                    "  \"fechaEntrega\": \"2025-06-11\",\n" +
+                    "  \"entregado\": true,\n" +
+                    "  \"observacion\": \"Se entrego al hijo de la persona.\",\n" +
+                    "  \"guiaDespacho\": 1,\n" +
+                    "  \"vehiculoDespacho\": 1,\n" +
+                    "  \"ruta\": \"2\"\n" +
+                    "}") Envio envio) {
         try {
             Envio envioActualizado = envioService.parcharEnvio(id, envio);
             EnvioDTO envioDTO = EnvioConverter.convertToDTO(envioActualizado);
@@ -194,13 +190,12 @@ public class EnvioController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Borra un envio usando su id")
-        @ApiResponses(value = {
+    @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Operacion exitosa, no devuelve contenido."),
             @ApiResponse(responseCode = "404", description = "No se encontro el envio.")
     })
     public ResponseEntity<?> eliminarEnvio(
-        @Parameter(description = "Id del envio a borrar" , required = true)
-        @PathVariable Integer id) {
+            @Parameter(description = "Id del envio a borrar", required = true) @PathVariable Integer id) {
         try {
             envioService.eliminarEnvio(id);
             return ResponseEntity.noContent().build();
