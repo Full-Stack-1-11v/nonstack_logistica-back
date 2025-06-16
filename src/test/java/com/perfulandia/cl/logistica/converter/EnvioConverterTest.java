@@ -11,18 +11,15 @@ import java.time.LocalDate;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 
 import com.perfulandia.cl.logistica.dto.EnvioDTO;
 import com.perfulandia.cl.logistica.model.Envio;
 
 public class EnvioConverterTest {
 
-    // Ojo, com el metodo es estatico, no es necesario injectmock, pero lo dejo para
-    // recordarme
+    // Ojo, com el metodo es estatico, no es necesario injectmock, pero lo dejo para recordarme
 
-    @InjectMocks
-    EnvioConverter envioConverter;
+
 
     Envio envio = new Envio();
 
