@@ -3,7 +3,9 @@ package com.perfulandia.cl.logistica.model;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -27,20 +29,19 @@ public class VehiculoDespacho {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Schema(description = "Id del vehiculo",example = "1")
+    @Schema(description = "Id del vehiculo", example = "1")
     private Integer idVehiculoDespacho;
 
-    @Column(name = "patente" , nullable = false , length = 13, unique = true)
-    @Schema(description = "Patente del vehiculo",example = "AA-11")
+    @Column(name = "patente", nullable = false, length = 13, unique = true)
+    @Schema(description = "Patente del vehiculo", example = "AA-11")
     private String patente;
 
-    @Column(name = "ano" , nullable = false , length = 4)
-    @Schema(description = "Año de manufacturación del vehículo",example = "2025")
+    @Column(name = "ano", nullable = false, length = 4)
+    @Schema(description = "Año de manufacturación del vehículo", example = "2025")
     private Integer ano;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "vehiculoDespacho" , cascade = CascadeType.ALL , orphanRemoval = true)
+    @OneToMany(mappedBy = "vehiculoDespacho", cascade = CascadeType.ALL, orphanRemoval = true)
     @ArraySchema(schema = @Schema(implementation = Envio.class))
-    @JsonBackReference
+    @JsonIgnore
     private List<Envio> envios;
 }

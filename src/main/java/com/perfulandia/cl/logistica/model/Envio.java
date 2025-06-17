@@ -2,7 +2,11 @@ package com.perfulandia.cl.logistica.model;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
@@ -27,46 +31,45 @@ public class Envio {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Schema(description = "Id del envio",example = "1")
+    @Schema(description = "Id del envio", example = "1")
     private Integer idEnvio;
 
     @Column(name = "id_cliente", nullable = false)
-    @Schema(description = "Id del cliente",example = "1")
+    @Schema(description = "Id del cliente", example = "1")
     private Integer idCliente;
 
     @Column(name = "id_orden", nullable = false)
-    @Schema(description = "Id de la orden",example = "1")
+    @Schema(description = "Id de la orden", example = "1")
     private Integer idOrden;
 
     @Column(name = "fecha_entrega", nullable = false)
-    @Schema(description = "Fecha de cuando se realizo la entrega",example = "30-10-1991")
+    @Schema(description = "Fecha de cuando se realizo la entrega", example = "30-10-1991")
     @Temporal(TemporalType.DATE)
     private LocalDate fechaEntrega;
 
     @Column(name = "entregado", nullable = false)
-    @Schema(description = "Booleano que determine si el envio fue realizado",example = "true")
+    @Schema(description = "Booleano que determine si el envio fue realizado", example = "true")
     private Boolean entregado;
 
     @Column(name = "observacion", nullable = false, length = 150)
-    @Schema(description = "Observacion adicional al envio",example = "Se entrego al hijo de la persona.")
+    @Schema(description = "Observacion adicional al envio", example = "Se entrego al hijo de la persona.")
     private String observacion;
 
     @ManyToOne
     @JoinColumn(name = "id_despacho", nullable = false)
-    @JsonManagedReference
-    @Schema(description = "Guia de despacho relacionada",example = "1")
+    @Schema(description = "Guia de despacho relacionada", example = "1")
+    @JsonProperty("guiaDespacho")
     private GuiaDespacho guiaDespacho;
 
     @ManyToOne
     @JoinColumn(name = "id_vehiculo", nullable = false)
-    @JsonManagedReference
-    @Schema(description = "Vehiculo de despacho relacionado",example = "1")
+
+    @Schema(description = "Vehiculo de despacho relacionado", example = "1")
     private VehiculoDespacho vehiculoDespacho;
 
     @ManyToOne
-    @JoinColumn(name = "id_ruta",nullable = false)
-    @JsonManagedReference
-    @Schema(description = "Id de la ruta relacionada",example = "2")
+    @JoinColumn(name = "id_ruta", nullable = false)
+    @Schema(description = "Id de la ruta relacionada", example = "2")
     private Ruta ruta;
 
 }

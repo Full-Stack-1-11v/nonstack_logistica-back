@@ -13,7 +13,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.perfulandia.cl.logistica.assemblers.EnvioDTOModelAssembler;
 import com.perfulandia.cl.logistica.assemblers.EnvioModelAssembler;
+import com.perfulandia.cl.logistica.converter.EnvioConverter;
+import com.perfulandia.cl.logistica.dto.EnvioDTO;
 import com.perfulandia.cl.logistica.model.Envio;
 import com.perfulandia.cl.logistica.service.EnvioService;
 
@@ -42,7 +45,16 @@ public class EnvioControllerV2 {
     @Autowired
     private EnvioModelAssembler assembler;
 
+    @Autowired
+    private EnvioDTOModelAssembler assemblerDTO;
+
+
     @GetMapping("")
+    @Operation(summary = "Obtener todos los envios", description = "Obtiene una lista de todas las carreras")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Operacion exitosa, devuelve los envios encontrados", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Envio.class))),
+            @ApiResponse(responseCode = "404", description = "No se encontraron envios")
+    })
     public ResponseEntity<CollectionModel<EntityModel<Envio>>> getEnvios() {
         List<Envio> envios = envioService.obtenerEnvios();
         if (envios.isEmpty()) {
@@ -58,7 +70,13 @@ public class EnvioControllerV2 {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EntityModel<Envio>> getEnvioPorId(@PathVariable Integer id) {
+    @Operation(summary = "Obtiene datos de un envios.", description = "A traves de la id de un envio obtiene los detalles de este.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Operacion exitosa, devuelve el envio con el id entregado.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Envio.class))),
+            @ApiResponse(responseCode = "404", description = "No se encontraron envios con esa id")
+    })
+    public ResponseEntity<EntityModel<Envio>> getEnvioPorId(
+            @Parameter(description = "ID del envio a obtener", required = true) @PathVariable Integer id) {
         Optional<Envio> envio = envioService.obtenerEnvioPorId(id);
         return envio
                 .map(envioOptional -> assembler.toModel(envioOptional))
@@ -67,9 +85,14 @@ public class EnvioControllerV2 {
     }
 
     @GetMapping("/buscar-por-fecha/{fechaInicio}/{fechaFin}")
+    @Operation(summary = "Obtiene envios en un rango de fecha determinado.", description = "A traves del rango de fecha entrega una lista de envios")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Operacion exitosa, devuelve los envios encontradas en ese rango de fecha", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Envio.class))),
+            @ApiResponse(responseCode = "400", description = "Request incorrecto")
+    })
     public ResponseEntity<CollectionModel<EntityModel<Envio>>> getEnvioPorFecha(
-            @PathVariable LocalDate fechaInicio,
-            @PathVariable LocalDate fechaFin) {
+            @Parameter(description = "Fecha inicial (inclusive)", required = true, example = "2023-04-01") @PathVariable LocalDate fechaInicio,
+            @Parameter(description = "Fecha final (inclusive)", required = true, example = "2025-12-12") @PathVariable LocalDate fechaFin) {
 
         List<Envio> enviosEncontrados = envioService.buscarEnvioPorRangoDeFecha(fechaInicio, fechaFin);
 
@@ -91,28 +114,30 @@ public class EnvioControllerV2 {
             @ApiResponse(responseCode = "201", description = "Operacion exitosa, devuelve el envio registrado.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Envio.class))),
             @ApiResponse(responseCode = "500", description = "No se pudo registrar(erorr interno)")
     })
-    public ResponseEntity<EntityModel<Envio>> crearEnvio(
-            @RequestBody @Schema(description = "Datos del envio a crear", required = true,example = "{\n" +
-                "  \"idCliente\": 999,\n" +
-                "  \"idOrden\": 1,\n" +
-                "  \"fechaEntrega\": \"2024-12-11\",\n" +
-                "  \"entregado\": true,\n" +
-                "  \"observacion\": \"Salio un perro ladrando\",\n" +
-                "  \"guiaDespacho\": {\n" +
-                "    \"idDespacho\": 1\n" +
-                "  },\n" +
-                "  \"vehiculoDespacho\": {\n" +
-                "    \"idVehiculoDespacho\": 1\n" +
-                "  },\n" +
-                "  \"ruta\": {\n" +
-                "    \"idRuta\": 1\n" +
-                "  }\n" +
-                "}") Envio envio) {
+    public ResponseEntity<EntityModel<EnvioDTO>> crearEnvio(
+            @RequestBody @Schema(description = "Datos del envio a crear", required = true, example = "{\n" +
+                    "  \"idCliente\": 999,\n" +
+                    "  \"idOrden\": 1,\n" +
+                    "  \"fechaEntrega\": \"2024-12-11\",\n" +
+                    "  \"entregado\": true,\n" +
+                    "  \"observacion\": \"Salio un perro ladrando\",\n" +
+                    "  \"guiaDespacho\": {\n" +
+                    "    \"idDespacho\": 1\n" +
+                    "  },\n" +
+                    "  \"vehiculoDespacho\": {\n" +
+                    "    \"idVehiculoDespacho\": 1\n" +
+                    "  },\n" +
+                    "  \"ruta\": {\n" +
+                    "    \"idRuta\": 1\n" +
+                    "  }\n" +
+                    "}") Envio envio) {
         try {
             Envio nuevoEnvio = envioService.crearEnvio(envio);
-            EntityModel<Envio> envioEntity = assembler.toModel(nuevoEnvio);
+            EnvioDTO nuevoEnvioDTO = EnvioConverter.convertToDTO(nuevoEnvio);
+            EntityModel<EnvioDTO> envioEntity = assemblerDTO.toModel(nuevoEnvioDTO);
             return new ResponseEntity<>(envioEntity, HttpStatus.CREATED);
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 

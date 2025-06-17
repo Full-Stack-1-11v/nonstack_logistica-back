@@ -3,10 +3,9 @@ package com.perfulandia.cl.logistica.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.perfulandia.cl.logistica.assemblers.GuiaDespachoAssembler;
 import com.perfulandia.cl.logistica.client.OrdenFeignClient;
-import com.perfulandia.cl.logistica.converter.GuiaDespachoConverter;
-import com.perfulandia.cl.logistica.dto.GuiaDespachoDTO;
-import com.perfulandia.cl.logistica.dto.OrdenDTO;
+
 import com.perfulandia.cl.logistica.model.GuiaDespacho;
 import com.perfulandia.cl.logistica.service.GuiaDespachoService;
 import com.perfulandia.cl.logistica.service.OrdenDTOService;
@@ -19,11 +18,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,13 +34,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-
 
 @RestController
-@RequestMapping("/api/v1/logistica/despachos")
+@RequestMapping("/api/v2/logistica/despachos")
 @Tag(name = "Guias de Despacho", description = "Operaciones relacionadas a las guias de despacho de Perfulandia")
-public class GuiaDespachoController {
+public class GuiaDespachoControllerV2 {
 
     @Autowired
     private GuiaDespachoService guiaDespachoService;
@@ -47,6 +46,8 @@ public class GuiaDespachoController {
     private OrdenDTOService UserDTOService;
     @Autowired
     private OrdenFeignClient ordenClient;
+    @Autowired
+    GuiaDespachoAssembler assembler;
 
     @GetMapping("")
     @Operation(summary = "Obtener todos las guias de despacho", description = "Obtiene una lista de todas las guias de despacho")
@@ -55,37 +56,27 @@ public class GuiaDespachoController {
             @ApiResponse(responseCode = "200", description = "Operacion exitosa, devuelve todos los despachos."),
             @ApiResponse(responseCode = "500", description = "Error en el codigo.")
     })
-    public ResponseEntity<?> getDespachos() {
+    public ResponseEntity<CollectionModel<EntityModel<GuiaDespacho>>> getDespachos() {
         try {
             List<GuiaDespacho> despachos = guiaDespachoService.verGuiaDespachos();
-            if (despachos.size() == 0) {
+            if (despachos.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
 
-            List<GuiaDespachoDTO> despachosDTO = despachos.stream()
-                    .map(guia -> GuiaDespachoConverter.convertToDTO(guia, ordenClient))
-                    .collect(Collectors.toList());
+            List<EntityModel<GuiaDespacho>> despachosHateoas = despachos.stream()
+                                                .map(assembler::toModel)
+                                                .toList();
 
-            return new ResponseEntity<>(despachosDTO, HttpStatus.OK);
+            CollectionModel<EntityModel<GuiaDespacho>> collection = CollectionModel.of(despachosHateoas);
+
+            return new ResponseEntity<>(collection, HttpStatus.OK);
 
         } catch (Exception e) {
-            return new ResponseEntity<>("Error : " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 
         }
 
     }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<GuiaDespacho> getGuiaDespachoById(@RequestParam Integer id) {
-        Optional<GuiaDespacho> guiaDespachoOptional = guiaDespachoService.obtenerGuiaDespachoPorId(id);
-        if(guiaDespachoOptional.isPresent()){
-            GuiaDespacho guiaDespacho = guiaDespachoOptional.get();
-            return new ResponseEntity<>(guiaDespacho,HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
-    
 
     @PostMapping()
     @Operation(summary = "Registra una guia de despacho traves de un body")
@@ -93,16 +84,17 @@ public class GuiaDespachoController {
             @ApiResponse(responseCode = "201", description = "Operacion exitosa, devuelve la guia de despacho registrada.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GuiaDespacho.class))),
             @ApiResponse(responseCode = "500", description = "No se pudo registrar(erorr interno)")
     })
-    public ResponseEntity<?> createDespacho(
+    public ResponseEntity<EntityModel<GuiaDespacho>> createDespacho(
             @RequestBody @Schema(description = "Datos de la guia de despacho a crear", example = "{\n" +
                     "  \"idEnvio\": 1,\n" +
                     "  \"idOrden\": 1\n" +
                     "}") GuiaDespacho guiaDespacho) {
         try {
-            guiaDespachoService.crearGuiaDespacho(guiaDespacho);
-            return new ResponseEntity<>(guiaDespacho, HttpStatus.CREATED);
+            GuiaDespacho guiaDespachoCreada = guiaDespachoService.crearGuiaDespacho(guiaDespacho);
+            EntityModel<GuiaDespacho> guiaDespachoHateoas= assembler.toModel(guiaDespachoCreada);
+            return new ResponseEntity<>(guiaDespachoHateoas, HttpStatus.CREATED);
         } catch (Exception e) {
-            return new ResponseEntity<>("Error : " + e.getMessage() + " " + e.getLocalizedMessage(),
+            return new ResponseEntity<>(
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -113,7 +105,7 @@ public class GuiaDespachoController {
             @ApiResponse(responseCode = "200", description = "Operacion exitosa, devuelve la guia de despacho actualizada.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GuiaDespacho.class))),
             @ApiResponse(responseCode = "404", description = "No se encontro la guia de despacho.")
     })
-    public ResponseEntity<?> putGuiaDespacho(
+    public ResponseEntity<EntityModel<GuiaDespacho>> putGuiaDespacho(
             @Parameter(description = "Id guia despacho a actualizar", required = true) @PathVariable Integer id,
             @Schema(description = "Datos de la guia de despacho a realizar put", example = "{\n" +
                     "  \"idEnvio\": 1,\n" +
@@ -121,10 +113,11 @@ public class GuiaDespachoController {
                     "}") @RequestBody GuiaDespacho guiaDespacho) {
         try {
             GuiaDespacho guiaDespachoParchada = guiaDespachoService.putGuiaDespacho(guiaDespacho, id);
-            return ResponseEntity.ok(guiaDespachoParchada);
+            EntityModel<GuiaDespacho> guiaDespachoHateoas = assembler.toModel(guiaDespachoParchada);
+            return new ResponseEntity<>(guiaDespachoHateoas,HttpStatus.OK);
 
         } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -134,7 +127,7 @@ public class GuiaDespachoController {
             @ApiResponse(responseCode = "500", description = "Error al parchar.")
     })
     @Operation(summary = "Parcha una guia de despacho a traves de un body y la id")
-    public ResponseEntity<?> patchGuiaDespacho(
+    public ResponseEntity<EntityModel<GuiaDespacho>> patchGuiaDespacho(
             @Parameter(description = "Id guia de despacho a actualizar", required = true) @PathVariable Integer id,
             @Schema(description = "Datos de la guia de despacho a realizar put", example = "{\n" +
                     "  \"idEnvio\": 1,\n" +
@@ -142,9 +135,10 @@ public class GuiaDespachoController {
                     "}") @RequestBody GuiaDespacho guiaDespacho) {
         try {
             GuiaDespacho guiaDespachoParchada = guiaDespachoService.parcharGuiaDespacho(guiaDespacho, id);
-            return ResponseEntity.ok(guiaDespachoParchada);
+            EntityModel<GuiaDespacho> guiaDespachoHateoas = assembler.toModel(guiaDespachoParchada);
+            return ResponseEntity.ok(guiaDespachoHateoas);
         } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -166,18 +160,4 @@ public class GuiaDespachoController {
         }
     }
 
-    @GetMapping("/test_ordenes")
-    @Operation(summary = "Test Feign Client, no para uso final")
-     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Operacion exitosa, la api externa funciona!."),
-            @ApiResponse(responseCode = "404", description = "No se encontro el endpoint.")
-    })
-    public ResponseEntity<?> getOrdenes() {
-        try {
-            List<OrdenDTO> ordenes = UserDTOService.verOrdenes();
-            return ResponseEntity.ok(ordenes);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
 }

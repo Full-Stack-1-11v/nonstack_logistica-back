@@ -31,6 +31,13 @@ public class GuiaDespachoService {
     }
 
     @Transactional
+    public Optional<GuiaDespacho> obtenerGuiaDespachoPorId(Integer id){
+        Optional<GuiaDespacho> guiaDespacho = guiaDespachoRepository.findById(id);
+
+        return guiaDespacho;
+    }
+
+    @Transactional
     public GuiaDespacho putGuiaDespacho(GuiaDespacho guiaDespacho, Integer id) {
 
         if (!guiaDespachoRepository.existsById(id)) {

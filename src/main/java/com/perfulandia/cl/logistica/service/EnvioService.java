@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.perfulandia.cl.logistica.model.Envio;
+import com.perfulandia.cl.logistica.model.GuiaDespacho;
 import com.perfulandia.cl.logistica.repository.EnvioRepository;
+import com.perfulandia.cl.logistica.repository.GuiaDespachoRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -18,6 +20,8 @@ public class EnvioService {
 
     @Autowired
     EnvioRepository envioRepository;
+    @Autowired
+    GuiaDespachoRepository guiaDespachoRepository;
 
     public List<Envio> obtenerEnvios() {
 
@@ -32,6 +36,15 @@ public class EnvioService {
     }
 
     public Envio crearEnvio(Envio envio) {
+        // Obtener guiadespacho de la DB
+        GuiaDespacho guiaDespacho = guiaDespachoRepository.findById(envio.getGuiaDespacho().getIdDespacho())
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "GuiaDespacho with id " + envio.getGuiaDespacho().getIdDespacho() + " no encontrado"));
+
+        // Asociar guia despacho al envio
+        envio.setGuiaDespacho(guiaDespacho);
+
+        // Guardar el envio
         return envioRepository.save(envio);
     }
 
@@ -88,7 +101,7 @@ public class EnvioService {
         return envioRepository.save(envioExistente);
     }
 
-    public List<Envio> buscarEnvioPorRangoDeFecha(LocalDate fechaInicial , LocalDate fechaFinal){
+    public List<Envio> buscarEnvioPorRangoDeFecha(LocalDate fechaInicial, LocalDate fechaFinal) {
         List<Envio> enviosEncontrados = envioRepository.buscarPorRangoDeFecha(fechaInicial, fechaFinal);
         return enviosEncontrados;
     }
