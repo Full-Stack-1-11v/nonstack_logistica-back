@@ -1,7 +1,9 @@
 package com.perfulandia.cl.logistica.converter;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -74,5 +76,32 @@ public class GuiaConverterTest {
                 .hasFieldOrPropertyWithValue("idOrden", guiaDespacho.getIdOrden())
                 .hasFieldOrPropertyWithValue("datosOrden",ordenDTO)
                 .hasFieldOrPropertyWithValue("idEnvios", guiaDTO.getIdEnvios());
+    }
+
+    @Test
+    public void convertToDTO_EnvioIsNull(){
+        guiaDespacho.setEnvios(null);
+        when(feignClient.obtenerOrdenPorId(guiaDespacho.getIdOrden())).thenReturn(ordenDTO);
+
+        GuiaDespachoDTO guiaDTO = GuiaDespachoConverter.convertToDTO(guiaDespacho, feignClient);
+
+        assertNotNull(guiaDTO);
+        assertThat(guiaDTO)
+                .hasFieldOrPropertyWithValue("idDespacho", guiaDespacho.getIdDespacho())
+                .hasFieldOrPropertyWithValue("idEnvio", guiaDespacho.getIdEnvio())
+                .hasFieldOrPropertyWithValue("idOrden", guiaDespacho.getIdOrden())
+                .hasFieldOrPropertyWithValue("datosOrden",ordenDTO)
+                .hasFieldOrPropertyWithValue("idEnvios", null);
+    }
+
+    @Test
+    public void convertToDTO_NullGuiaDespacho(){
+        guiaDespacho = null;
+
+        NullPointerException exception = assertThrows(NullPointerException.class, ()->{
+            GuiaDespachoDTO guiaDTO = GuiaDespachoConverter.convertToDTO(guiaDespacho, feignClient);
+        });
+
+
     }
 }
