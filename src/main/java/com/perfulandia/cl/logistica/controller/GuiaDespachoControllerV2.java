@@ -4,11 +4,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.perfulandia.cl.logistica.assemblers.GuiaDespachoAssembler;
-import com.perfulandia.cl.logistica.client.OrdenFeignClient;
 
 import com.perfulandia.cl.logistica.model.GuiaDespacho;
 import com.perfulandia.cl.logistica.service.GuiaDespachoService;
-import com.perfulandia.cl.logistica.service.OrdenDTOService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -42,10 +40,7 @@ public class GuiaDespachoControllerV2 {
 
     @Autowired
     private GuiaDespachoService guiaDespachoService;
-    @Autowired
-    private OrdenDTOService UserDTOService;
-    @Autowired
-    private OrdenFeignClient ordenClient;
+    
     @Autowired
     GuiaDespachoAssembler assembler;
 

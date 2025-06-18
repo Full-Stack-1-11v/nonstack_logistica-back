@@ -8,7 +8,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import com.perfulandia.cl.logistica.controller.GuiaDespachoController;
-import com.perfulandia.cl.logistica.dto.GuiaDespachoDTO;
 import com.perfulandia.cl.logistica.model.GuiaDespacho;
 
 @Component

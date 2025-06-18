@@ -48,7 +48,6 @@ public class EnvioControllerV2 {
     @Autowired
     private EnvioDTOModelAssembler assemblerDTO;
 
-
     @GetMapping("")
     @Operation(summary = "Obtener todos los envios", description = "Obtiene una lista de todas las carreras")
     @ApiResponses(value = {
@@ -149,7 +148,7 @@ public class EnvioControllerV2 {
             @ApiResponse(responseCode = "200", description = "Operacion exitosa, devuelve el envio actualizado.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Envio.class))),
             @ApiResponse(responseCode = "404", description = "No se encontro el envio.")
     })
-    public ResponseEntity<EntityModel<Envio>> actualizarEnvio(
+    public ResponseEntity<EntityModel<EnvioDTO>> actualizarEnvio(
             @Parameter(description = "Id del envio a actualizar", required = true) @PathVariable Integer id,
             @RequestBody @Schema(description = "Datos de la actualización", required = true, example = "{\n" +
                     "  \"idEnvio\": 1,\n" +
@@ -165,7 +164,8 @@ public class EnvioControllerV2 {
         try {
             Envio envioActualizado = envioService.actualizarEnvio(id, envio);
             if (envioActualizado != null) {
-                EntityModel<Envio> envioEntity = envioActualizado != null ? assembler.toModel(envioActualizado) : null;
+                EnvioDTO envioDTO = EnvioConverter.convertToDTO(envioActualizado);
+                EntityModel<EnvioDTO> envioEntity = assemblerDTO.toModel(envioDTO);
                 return ResponseEntity.ok(envioEntity);
             } else {
                 return ResponseEntity.notFound().build();
@@ -181,7 +181,7 @@ public class EnvioControllerV2 {
             @ApiResponse(responseCode = "200", description = "Operacion exitosa, devuelve el envio parchado.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Envio.class))),
             @ApiResponse(responseCode = "404", description = "No se encontro el envio.")
     })
-    public ResponseEntity<EntityModel<Envio>> parcharEnvio(
+    public ResponseEntity<EntityModel<EnvioDTO>> parcharEnvio(
             @Parameter(description = "Id del envio a actualizar", required = true) @PathVariable Integer id,
             @RequestBody @Schema(description = "Datos de la actualización", required = false, example = "{\n" +
                     "  \"idEnvio\": 1,\n" +
@@ -196,11 +196,15 @@ public class EnvioControllerV2 {
                     "}") Envio envio) {
         try {
             Envio envioActualizado = envioService.parcharEnvio(id, envio);
-            EntityModel<Envio> envioEntity = envioActualizado != null ? assembler.toModel(envioActualizado) : null;
-            if (envioEntity == null) {
+
+            if (envioActualizado != null) {
+                EnvioDTO envioDTO = EnvioConverter.convertToDTO(envioActualizado);
+                EntityModel<EnvioDTO> envioEntity = envioActualizado != null ? assemblerDTO.toModel(envioDTO) : null;
+                return ResponseEntity.ok(envioEntity);
+            } else {
                 return ResponseEntity.notFound().build();
             }
-            return ResponseEntity.ok(envioEntity);
+
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
