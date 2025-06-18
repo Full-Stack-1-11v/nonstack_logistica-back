@@ -43,9 +43,6 @@ public class EnvioControllerV2 {
     private EnvioService envioService;
 
     @Autowired
-    private EnvioModelAssembler assembler;
-
-    @Autowired
     private EnvioDTOModelAssembler assemblerDTO;
 
     @GetMapping("")
@@ -54,16 +51,18 @@ public class EnvioControllerV2 {
             @ApiResponse(responseCode = "200", description = "Operacion exitosa, devuelve los envios encontrados", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Envio.class))),
             @ApiResponse(responseCode = "404", description = "No se encontraron envios")
     })
-    public ResponseEntity<CollectionModel<EntityModel<Envio>>> getEnvios() {
+    public ResponseEntity<CollectionModel<EntityModel<EnvioDTO>>> getEnvios() {
         List<Envio> envios = envioService.obtenerEnvios();
+        List<EnvioDTO> enviosDTO = envios.stream().map(EnvioConverter::convertToDTO).toList();
         if (envios.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
-        List<EntityModel<Envio>> enviosHateoas = envios.stream()
-                .map(assembler::toModel)
+        List<EntityModel<EnvioDTO>> enviosHateoas = enviosDTO.stream()
+                .map(assemblerDTO::toModel)
                 .collect(Collectors.toList());
-        CollectionModel<EntityModel<Envio>> collectionModel = CollectionModel.of(enviosHateoas);
+
+        CollectionModel<EntityModel<EnvioDTO>> collectionModel = CollectionModel.of(enviosHateoas);
 
         return new ResponseEntity<>(collectionModel, HttpStatus.OK);
     }
@@ -74,13 +73,16 @@ public class EnvioControllerV2 {
             @ApiResponse(responseCode = "200", description = "Operacion exitosa, devuelve el envio con el id entregado.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Envio.class))),
             @ApiResponse(responseCode = "404", description = "No se encontraron envios con esa id")
     })
-    public ResponseEntity<EntityModel<Envio>> getEnvioPorId(
-            @Parameter(description = "ID del envio a obtener", required = true) @PathVariable Integer id) {
+    public ResponseEntity<EntityModel<EnvioDTO>> getEnvioPorId(
+     @Parameter(description = "ID del envio a obtener", required = true) @PathVariable Integer id) {
         Optional<Envio> envio = envioService.obtenerEnvioPorId(id);
-        return envio
-                .map(envioOptional -> assembler.toModel(envioOptional))
-                .map(entityModel -> new ResponseEntity<>(entityModel, HttpStatus.OK))
-                .orElse(ResponseEntity.notFound().build());
+        if(envio.isPresent()){
+        EnvioDTO envioDTO = EnvioConverter.convertToDTO(envio.get());
+        EntityModel<EnvioDTO> entityModel = assemblerDTO.toModel(envioDTO);
+        return new ResponseEntity<>(entityModel, HttpStatus.OK);
+        }
+        
+        return ResponseEntity.notFound().build();
     }
 
     @GetMapping("/buscar-por-fecha/{fechaInicio}/{fechaFin}")
@@ -89,7 +91,7 @@ public class EnvioControllerV2 {
             @ApiResponse(responseCode = "200", description = "Operacion exitosa, devuelve los envios encontradas en ese rango de fecha", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Envio.class))),
             @ApiResponse(responseCode = "400", description = "Request incorrecto")
     })
-    public ResponseEntity<CollectionModel<EntityModel<Envio>>> getEnvioPorFecha(
+    public ResponseEntity<CollectionModel<EntityModel<EnvioDTO>>> getEnvioPorFecha(
             @Parameter(description = "Fecha inicial (inclusive)", required = true, example = "2023-04-01") @PathVariable LocalDate fechaInicio,
             @Parameter(description = "Fecha final (inclusive)", required = true, example = "2025-12-12") @PathVariable LocalDate fechaFin) {
 
@@ -98,10 +100,13 @@ public class EnvioControllerV2 {
         if (enviosEncontrados.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-        List<EntityModel<Envio>> enviosHateoas = enviosEncontrados.stream()
-                .map(assembler::toModel)
+
+        List<EnvioDTO> enviosDTO = enviosEncontrados.stream().map(EnvioConverter::convertToDTO).toList();
+
+        List<EntityModel<EnvioDTO>> enviosHateoas = enviosDTO.stream()
+                .map(assemblerDTO::toModel)
                 .collect(Collectors.toList());
-        CollectionModel<EntityModel<Envio>> collectionModel = CollectionModel.of(enviosHateoas);
+        CollectionModel<EntityModel<EnvioDTO>> collectionModel = CollectionModel.of(enviosHateoas);
 
         return new ResponseEntity<>(collectionModel, HttpStatus.OK);
 
