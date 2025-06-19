@@ -49,7 +49,7 @@ public class EnvioControllerV2 {
     @Operation(summary = "Obtener todos los envios", description = "Obtiene una lista de todas las carreras")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Operacion exitosa, devuelve los envios encontrados", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Envio.class))),
-            @ApiResponse(responseCode = "404", description = "No se encontraron envios")
+            @ApiResponse(responseCode = "204", description = "No se encontraron envios")
     })
     public ResponseEntity<CollectionModel<EntityModel<EnvioDTO>>> getEnvios() {
         List<Envio> envios = envioService.obtenerEnvios();

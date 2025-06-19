@@ -41,6 +41,7 @@ public class EnvioService {
                 .orElseThrow(() -> new IllegalArgumentException(
                         "GuiaDespacho with id " + envio.getGuiaDespacho().getIdDespacho() + " no encontrado"));
 
+        // Falta verificar si el envio ya existe!
         // Asociar guia despacho al envio
         envio.setGuiaDespacho(guiaDespacho);
 

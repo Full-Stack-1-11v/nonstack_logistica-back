@@ -22,7 +22,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import com.perfulandia.cl.logistica.model.Envio;
+import com.perfulandia.cl.logistica.model.GuiaDespacho;
+import com.perfulandia.cl.logistica.model.Ruta;
+import com.perfulandia.cl.logistica.model.VehiculoDespacho;
 import com.perfulandia.cl.logistica.repository.EnvioRepository;
+import com.perfulandia.cl.logistica.repository.GuiaDespachoRepository;
 import com.perfulandia.cl.logistica.service.EnvioService;
 
 @SpringBootTest
@@ -34,10 +38,20 @@ public class EnvioServiceTest {
     @MockitoBean
     EnvioRepository envioRepository;
 
-    List<Envio> enviosMock = new ArrayList<>();
+    @MockitoBean
+    GuiaDespachoRepository guiaDespachoRepository;
+
+    private List<Envio> enviosMock = new ArrayList<>();
+    private GuiaDespacho guiaDespacho = new GuiaDespacho();
+    
+    private VehiculoDespacho vehiculoDespacho = new VehiculoDespacho();
+    private Ruta ruta = new Ruta();
 
     @BeforeEach
     public void setUp() {
+        guiaDespacho.setIdDespacho(1);
+        ruta.setIdRuta(1);
+        vehiculoDespacho.setIdVehiculoDespacho(1);
         Envio envioMock1 = new Envio(1, 1, 1, LocalDate.now(), true, "En bodega", null, null, null);
         Envio envioMock2 = new Envio(2, 2, 2, LocalDate.now().plusDays(1), false, "En ruta", null, null, null);
         Envio envioMock3 = new Envio(3, 3, 3, LocalDate.now().plusDays(2), true, "Entregado", null, null, null);
@@ -46,6 +60,7 @@ public class EnvioServiceTest {
         enviosMock.add(envioMock2);
         enviosMock.add(envioMock3);
         enviosMock.add(envioMock4);
+        
     }
 
     @Test
@@ -62,7 +77,7 @@ public class EnvioServiceTest {
 
     @Test
     public void getEnvioByIdSuccesful() {
-        Envio envioMock = new Envio(1, 1, 1, LocalDate.now(), true, "En bodega", null, null, null);
+        Envio envioMock = new Envio(1, 1, 1, LocalDate.now(), true, "En bodega", guiaDespacho, vehiculoDespacho, ruta);
         Optional<Envio> envioMockOptional = Optional.of(envioMock);
         Integer idExistente = 1;
         when(envioRepository.findById(idExistente)).thenReturn(envioMockOptional);
@@ -85,7 +100,9 @@ public class EnvioServiceTest {
 
     @Test
     public void createEnvioSuccessful() {
-        Envio envioMock = new Envio(1, 1, 1, LocalDate.now(), true, "En bodega", null, null, null);
+        Optional<GuiaDespacho> despachoOptional = Optional.of(guiaDespacho);
+        Envio envioMock = new Envio(1, 1, 1, LocalDate.now(), true, "En bodega", guiaDespacho, vehiculoDespacho, ruta);
+        when(guiaDespachoRepository.findById(1)).thenReturn(despachoOptional);
         when(envioRepository.save(envioMock)).thenReturn(envioMock);
 
         Envio envioRegistrado = envioService.crearEnvio(envioMock);
@@ -171,7 +188,7 @@ public class EnvioServiceTest {
     }
 
     @Test
-    public void patchEnvioSuccessful(){
+    public void patchEnvioSuccessful() {
         Integer idExistente = 1;
         Envio envioPatch = new Envio(null, 2, 2, LocalDate.now(), true, "En bodega", null, null, null);
         Envio envioExistente = new Envio(1, 1, 1, LocalDate.now(), false, "Desconocido", null, null, null);
@@ -329,8 +346,9 @@ public class EnvioServiceTest {
         Envio envioMock4 = new Envio(4, 4, 4, fechaFinal.minusDays(7), false, "Retrasado", null, null, null);
         enviosMock = List.of(envioMock1, envioMock2, envioMock3, envioMock4);
         List<Envio> enviosFiltrados = enviosMock.stream()
-                .filter(envio -> (envio.getFechaEntrega().isAfter(fechaInicial) || envio.getFechaEntrega().isEqual(fechaInicial)) &&
-                                 (envio.getFechaEntrega().isBefore(fechaFinal) || envio.getFechaEntrega().isEqual(fechaFinal)))
+                .filter(envio -> (envio.getFechaEntrega().isAfter(fechaInicial)
+                        || envio.getFechaEntrega().isEqual(fechaInicial)) &&
+                        (envio.getFechaEntrega().isBefore(fechaFinal) || envio.getFechaEntrega().isEqual(fechaFinal)))
                 .collect(Collectors.toList());
 
         when(envioRepository.buscarPorRangoDeFecha(fechaInicial, fechaFinal)).thenReturn(enviosFiltrados);
@@ -343,12 +361,12 @@ public class EnvioServiceTest {
     }
 
     @Test
-    public void deleteEnvio_NonExistingId_ReturnsRuntimeException(){
+    public void deleteEnvio_NonExistingId_ReturnsRuntimeException() {
         Integer idNoExistente = 919;
 
         when(envioRepository.findById(idNoExistente)).thenReturn(Optional.empty());
 
-        RuntimeException exception = assertThrows(RuntimeException.class, ()->{
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             envioService.eliminarEnvio(idNoExistente);
         });
 
@@ -364,7 +382,7 @@ public class EnvioServiceTest {
 
         envioService.eliminarEnvio(idExistente);
 
-        verify(envioRepository,times(1)).deleteById(idExistente);
+        verify(envioRepository, times(1)).deleteById(idExistente);
 
     }
 

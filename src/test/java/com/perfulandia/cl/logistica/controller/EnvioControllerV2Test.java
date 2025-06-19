@@ -2,7 +2,10 @@ package com.perfulandia.cl.logistica.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -27,25 +31,34 @@ import com.perfulandia.cl.logistica.repository.RutaRepository;
 import com.perfulandia.cl.logistica.repository.VehiculoDespachoRepository;
 import com.perfulandia.cl.logistica.service.EnvioService;
 
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.print.attribute.standard.Media;
+
 @WebMvcTest(EnvioControllerV2.class)
 public class EnvioControllerV2Test {
 
     @Autowired
     private MockMvc mockMvc;
+    @Autowired
+    ObjectMapper objectMapper; // Para transformar objetos a JSON
 
     @MockitoBean
     EnvioService envioService;
 
-    @MockitoBean 
+    @MockitoBean
     private GuiaDespachoRepository guiaDespachoRepository;
 
     @MockitoBean
@@ -54,10 +67,10 @@ public class EnvioControllerV2Test {
     @MockitoBean
     private OrdenFeignClient ordenFeignClient;
 
-    @MockitoBean 
+    @MockitoBean
     private VehiculoDespachoRepository vehiculoDespachoRepository;
 
-    private List<Envio> listEnviosMock = new ArrayList<>();;
+    private List<Envio> listEnviosMock = new ArrayList<>();
     private OrdenDTO ordenDTOMock = new OrdenDTO();
     private GuiaDespacho guiaDespacho = new GuiaDespacho();
     private VehiculoDespacho vehiculoDespacho = new VehiculoDespacho();
@@ -69,21 +82,19 @@ public class EnvioControllerV2Test {
         // GuiaDespacho mock
         guiaDespacho.setIdDespacho(1);
         // VehiculoDespacho mock
-        
+
         vehiculoDespacho.setIdVehiculoDespacho(1);
         // Ruta mock
         ruta.setIdRuta(1);
         // Envios
-        Envio envio1 = new Envio(1, 101, 1, LocalDate.now(), false, "Observacion 1", guiaDespacho, vehiculoDespacho,
+        Envio envio1 = new Envio(1, 101, 1, LocalDate.of(2025, 2, 2), false, "Observacion 1", guiaDespacho,
+                vehiculoDespacho,
                 ruta);
         listEnviosMock.add(envio1);
 
         ordenDTOMock.setIdCliente(1);
         ordenDTOMock.setIdOrden(1);
         ordenDTOMock.setIdProducto(1);
-
-        
-        
 
     }
 
@@ -96,7 +107,171 @@ public class EnvioControllerV2Test {
         when(envioService.obtenerEnvios()).thenReturn(listEnviosMock);
 
         mockMvc.perform(get("/api/v2/logistica/envios"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/hal+json")) // Por que es HATEOAS
+                .andExpect(jsonPath("$._embedded.envioDTOList", hasSize(1)))
+                .andExpect(jsonPath("$._embedded.envioDTOList[0].idEnvio", is(1)))
+                .andExpect(jsonPath("$._embedded.envioDTOList[0].idCliente", is(101)))
+                .andExpect(jsonPath("$._embedded.envioDTOList[0].fechaEntrega", is("2025-02-02")))
+                .andExpect(jsonPath("$._embedded.envioDTOList[0].entregado", is(false)))
+                .andExpect(jsonPath("$._embedded.envioDTOList[0].observacion", is("Observacion 1")))
+                .andExpect(jsonPath("$._embedded.envioDTOList[0].guiaDespachoId", is(1)))
+                .andExpect(jsonPath("$._embedded.envioDTOList[0].vehiculoDespachoId", is(1)))
+                .andExpect(jsonPath("$._embedded.envioDTOList[0].rutaId", is(1)));
+
+        verify(envioService, times(1)).obtenerEnvios();
+
+    }
+
+    @Test
+    public void getEnviosIsEmpty() throws Exception {
+        listEnviosMock = new ArrayList<>();
+        when(rutaRepository.findById(any())).thenReturn(Optional.of(ruta));
+        when(ordenFeignClient.obtenerOrdenPorId(anyInt())).thenReturn(ordenDTOMock);
+        when(guiaDespachoRepository.findById(anyInt())).thenReturn(Optional.of(guiaDespacho));
+        when(vehiculoDespachoRepository.findById(any())).thenReturn(Optional.of(vehiculoDespacho));
+        when(envioService.obtenerEnvios()).thenReturn(listEnviosMock);
+
+        mockMvc.perform(get("/api/v2/logistica/envios"))
+                .andExpect(status().isNoContent());
+        verify(envioService, times(1)).obtenerEnvios();
+
+    }
+
+    @Test
+    public void getEnviosByIdSuccesful() throws Exception {
+        Integer idExistenteEnvio = 1;
+        Envio envio1 = new Envio(1, 101, 1, LocalDate.of(2025, 2, 2), false, "Observacion 1", guiaDespacho,
+                vehiculoDespacho,
+                ruta);
+        Optional<Envio> envioOptional = Optional.of(envio1);
+        when(rutaRepository.findById(any())).thenReturn(Optional.of(ruta));
+        when(ordenFeignClient.obtenerOrdenPorId(anyInt())).thenReturn(ordenDTOMock);
+        when(guiaDespachoRepository.findById(anyInt())).thenReturn(Optional.of(guiaDespacho));
+        when(vehiculoDespachoRepository.findById(any())).thenReturn(Optional.of(vehiculoDespacho));
+        when(envioService.obtenerEnvioPorId(idExistenteEnvio)).thenReturn(envioOptional);
+
+        mockMvc.perform(get("/api/v2/logistica/envios/{id}", idExistenteEnvio))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/hal+json")) // Por que es HATEOAS
+                .andExpect(jsonPath("$.idEnvio", is(1)))
+                .andExpect(jsonPath("$.idCliente", is(101)))
+                .andExpect(jsonPath("$.fechaEntrega", is("2025-02-02")))
+                .andExpect(jsonPath("$.entregado", is(false)))
+                .andExpect(jsonPath("$.observacion", is("Observacion 1")))
+                .andExpect(jsonPath("$.guiaDespachoId", is(1)))
+                .andExpect(jsonPath("$.vehiculoDespachoId", is(1)))
+                .andExpect(jsonPath("$.rutaId", is(1)));
+        verify(envioService, times(1)).obtenerEnvioPorId(idExistenteEnvio);
+
+    }
+
+    @Test
+    public void getEnviosById_NoResult() throws Exception {
+        Integer idNoExistenteEnvio = 2;
+        Optional<Envio> envioOptional = Optional.empty();
+        when(rutaRepository.findById(any())).thenReturn(Optional.of(ruta));
+        when(ordenFeignClient.obtenerOrdenPorId(anyInt())).thenReturn(ordenDTOMock);
+        when(guiaDespachoRepository.findById(anyInt())).thenReturn(Optional.of(guiaDespacho));
+        when(vehiculoDespachoRepository.findById(any())).thenReturn(Optional.of(vehiculoDespacho));
+        when(envioService.obtenerEnvioPorId(idNoExistenteEnvio)).thenReturn(envioOptional);
+        mockMvc.perform(get("/api/v2/logistica/envios/{id}", idNoExistenteEnvio))
+                .andExpect(status().isNotFound());
+
+    }
+
+    @Test
+    public void getEnviosFechasuccesful() throws Exception {
+        LocalDate fechaInicialMock = LocalDate.of(2025, 1, 1);
+        LocalDate fechaFinalMock = LocalDate.of(2025, 12, 31);
+        when(rutaRepository.findById(any())).thenReturn(Optional.of(ruta));
+        when(ordenFeignClient.obtenerOrdenPorId(anyInt())).thenReturn(ordenDTOMock);
+        when(guiaDespachoRepository.findById(anyInt())).thenReturn(Optional.of(guiaDespacho));
+        when(vehiculoDespachoRepository.findById(any())).thenReturn(Optional.of(vehiculoDespacho));
+        when(envioService.buscarEnvioPorRangoDeFecha(fechaInicialMock, fechaFinalMock)).thenReturn(listEnviosMock);
+
+        mockMvc.perform(get("/api/v2/logistica/envios/buscar-por-fecha/{fechaInicio}/{fechaFin}", fechaInicialMock,
+                fechaFinalMock)
+                .contentType("application/hal+json"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._embedded.envioDTOList", hasSize(1)))
+                .andExpect(jsonPath("$._embedded.envioDTOList[0].idEnvio", is(1)));
+
+        verify(envioService, times(1)).buscarEnvioPorRangoDeFecha(fechaInicialMock, fechaFinalMock);
+
+    }
+
+    @Test
+    public void getEnviosReturnsNoContent() throws Exception {
+        LocalDate fechaInicialMock = LocalDate.of(2024, 1, 1);
+        LocalDate fechaFinalMock = LocalDate.of(2024, 12, 31);
+        List<Envio> enviosVacio = new ArrayList<>();
+        when(rutaRepository.findById(any())).thenReturn(Optional.of(ruta));
+        when(ordenFeignClient.obtenerOrdenPorId(anyInt())).thenReturn(ordenDTOMock);
+        when(guiaDespachoRepository.findById(anyInt())).thenReturn(Optional.of(guiaDespacho));
+        when(vehiculoDespachoRepository.findById(any())).thenReturn(Optional.of(vehiculoDespacho));
+        when(envioService.buscarEnvioPorRangoDeFecha(fechaInicialMock, fechaFinalMock)).thenReturn(enviosVacio);
+
+        mockMvc.perform(get("/api/v2/logistica/envios/buscar-por-fecha/{fechaInicio}/{fechaFin}", fechaInicialMock,
+                fechaFinalMock)
+                .contentType("application/hal+json"))
+                .andExpect(status().isNoContent());
+
+        verify(envioService, times(1)).buscarEnvioPorRangoDeFecha(fechaInicialMock, fechaFinalMock);
+
+    }
+
+    @Test
+    public void postEnvioReturnsCreated() throws Exception {
+
+        Envio envio1 = new Envio(1, 101, 1, LocalDate.of(2025, 2, 2), false, "Observacion 1", guiaDespacho,
+                vehiculoDespacho, ruta);
+        // Hay que convertir el objeto en un JSON!
+        String requestBody = objectMapper.writeValueAsString(envio1);
+        when(envioService.crearEnvio(envio1)).thenReturn(envio1);
+
+        mockMvc.perform(post("/api/v2/logistica/envios")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody))
+                .andExpect(status().isCreated());
+
+        verify(envioService, times(1)).crearEnvio(envio1);
+    }
+
+    @Test
+    public void postEnvioReturnsInternalServerError() throws Exception{
+
+        Envio envio1 = new Envio(1, 101, 1, LocalDate.of(2025, 2, 2), false, "Observacion 1", guiaDespacho,
+                vehiculoDespacho, ruta);
+                // Hay que convertir el objeto en un JSON!
+        String requestBody = objectMapper.writeValueAsString(envio1);
+        when(envioService.crearEnvio(envio1)).thenThrow(IllegalArgumentException.class);
+
+        mockMvc.perform(post("/api/v2/logistica/envios")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody))
+        .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    public void putEnvioSuccessful(){
+        // Implementar
+    }
+
+    // Metodo que simula un put
+    public Envio putMock(Envio envioExistente,Envio envioPut){
+        Envio envioActualizado = envioExistente;
+        envioActualizado.setEntregado(envioPut.getEntregado());
+        envioActualizado.setFechaEntrega(envioPut.getFechaEntrega());
+        envioActualizado.setGuiaDespacho(envioPut.getGuiaDespacho());
+        envioActualizado.setIdCliente(envioPut.getIdCliente());
+        envioActualizado.setIdEnvio(envioPut.getIdEnvio());
+        envioActualizado.setIdOrden(envioPut.getIdOrden());
+        envioActualizado.setObservacion(envioPut.getObservacion());
+        envioActualizado.setRuta(envioPut.getRuta());
+        envioActualizado.setVehiculoDespacho(envioPut.getVehiculoDespacho());
+
+        return envioActualizado;
     }
 
 }
