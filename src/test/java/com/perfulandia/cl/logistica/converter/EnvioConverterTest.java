@@ -11,6 +11,7 @@ import java.time.LocalDate;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.perfulandia.cl.logistica.dto.EnvioDTO;
 import com.perfulandia.cl.logistica.model.Envio;
@@ -22,6 +23,8 @@ public class EnvioConverterTest {
 
 
     Envio envio = new Envio();
+    @Autowired
+    EnvioConverter converter;
 
     @BeforeEach
     public void setUp() {
@@ -60,7 +63,7 @@ public class EnvioConverterTest {
     @Test
     public void convertToDTOSuccessful() {
 
-        EnvioDTO envioDTO = EnvioConverter.convertToDTO(envio);
+        EnvioDTO envioDTO = converter.convertToDTO(envio);
 
         assertNotNull(envioDTO);
         assertEquals(envio.getIdEnvio(), envioDTO.getIdEnvio());

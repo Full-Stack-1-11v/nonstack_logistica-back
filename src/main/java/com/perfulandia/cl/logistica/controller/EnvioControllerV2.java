@@ -3,6 +3,7 @@ package com.perfulandia.cl.logistica.controller;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +56,7 @@ public class EnvioControllerV2 {
         List<Envio> envios = envioService.obtenerEnvios();
         List<EnvioDTO> enviosDTO = envios.stream().map(EnvioConverter::convertToDTO).toList();
         if (envios.isEmpty()) {
+
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
@@ -204,7 +206,7 @@ public class EnvioControllerV2 {
 
             if (envioActualizado != null) {
                 EnvioDTO envioDTO = EnvioConverter.convertToDTO(envioActualizado);
-                EntityModel<EnvioDTO> envioEntity = envioActualizado != null ? assemblerDTO.toModel(envioDTO) : null;
+                EntityModel<EnvioDTO> envioEntity = assemblerDTO.toModel(envioDTO);
                 return ResponseEntity.ok(envioEntity);
             } else {
                 return ResponseEntity.notFound().build();
