@@ -49,9 +49,9 @@ public class VehiculoDespachoControllerV2 {
     @GetMapping("")
     @Operation(summary = "Obtener todos los vehiculos de despacho.", description = "Obtiene una lista de todos los vehiculos de despacho.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Operacion exitosa, mo se encontraron vehiculos"),
+            @ApiResponse(responseCode = "204", description = "Operacion exitosa, no se encontraron vehiculos"),
             @ApiResponse(responseCode = "200", description = "Operacion exitosa, devuelve lista de vehiculos", content = @Content(mediaType = "application/json", schema = @Schema(implementation = VehiculoDespachoDTO.class))),
-            @ApiResponse(responseCode = "404", description = "No se encontraron vehiculos")
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     public ResponseEntity<CollectionModel<EntityModel<VehiculoDespachoDTO>>> getVehiculosDespacho() {
         try {
@@ -81,25 +81,32 @@ public class VehiculoDespachoControllerV2 {
     @Operation(summary = "Obtener todos los vehiculos de despacho por patron de las dos primeras letras de la patente.", description = "Obtiene una lista de todos los vehiculos de despacho por las dos primeras letras de la petente.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Operacion exitosa, devuelve lista de vehiculos", content = @Content(mediaType = "application/json", schema = @Schema(implementation = VehiculoDespachoDTO.class))),
-            @ApiResponse(responseCode = "400", description = "Busqueda mal realizda.")
+            @ApiResponse(responseCode = "400", description = "Busqueda mal realizda, patron de patente debe ser 2."),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor.")
     })
     public ResponseEntity<CollectionModel<EntityModel<VehiculoDespachoDTO>>> buscarPorPatronPatente(
             @Parameter(description = "Valor de solo DOS letras", required = true, example = "AA") @PathVariable String patron_patente) {
         try {
-            List<VehiculoDespacho> vehiculosEncontrados = vehiculoDespachoService
-                    .buscarVehiculoPorPatronPatente(patron_patente);
-            List<VehiculoDespachoDTO> vehiculosDTO = vehiculosEncontrados.stream()
-                    .map(VehiculoDespachoConverter::convertDTOVehiculo)
-                    .collect(Collectors.toList());
-            List<EntityModel<VehiculoDespachoDTO>> vehiculosEntity = vehiculosDTO
-                    .stream()
-                    .map(vehiculoDTOModelAssembler::toModel)
-                    .toList();
-            CollectionModel<EntityModel<VehiculoDespachoDTO>> collectionModel = CollectionModel.of(vehiculosEntity);
-            return ResponseEntity.ok(collectionModel);
+            if (patron_patente.length() != 2) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            } else {
+                List<VehiculoDespacho> vehiculosEncontrados = vehiculoDespachoService
+                        .buscarVehiculoPorPatronPatente(patron_patente);
+                List<VehiculoDespachoDTO> vehiculosDTO = vehiculosEncontrados.stream()
+                        .map(VehiculoDespachoConverter::convertDTOVehiculo)
+                        .collect(Collectors.toList());
+                List<EntityModel<VehiculoDespachoDTO>> vehiculosEntity = vehiculosDTO
+                        .stream()
+                        .map(vehiculoDTOModelAssembler::toModel)
+                        .toList();
+                CollectionModel<EntityModel<VehiculoDespachoDTO>> collectionModel = CollectionModel.of(vehiculosEntity);
+                return ResponseEntity.ok(collectionModel);
+
+            }
+
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -117,11 +124,11 @@ public class VehiculoDespachoControllerV2 {
                     "}") VehiculoDespacho vehiculo) {
         try {
             VehiculoDespacho vehiculoRegistrar = vehiculoDespachoService.registrarVehiculoDespacho(vehiculo);
-            EntityModel<VehiculoDespacho> vehiculoEntity = vehiculoDespachoAssembler.toModel(vehiculoRegistrar);
             if (vehiculoRegistrar == null) {
                 return new ResponseEntity<>(HttpStatus.CONFLICT);
             }
 
+            EntityModel<VehiculoDespacho> vehiculoEntity = vehiculoDespachoAssembler.toModel(vehiculoRegistrar);
             return new ResponseEntity<>(vehiculoEntity, HttpStatus.CREATED);
 
         } catch (Exception e) {
