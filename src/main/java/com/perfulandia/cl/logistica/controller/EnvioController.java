@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +41,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RequestMapping("/api/v1/logistica/envios")
 @Tag(name = "Envios", description = "Operaciones relacionadas a los envios de Perfulandia")
 public class EnvioController {
-
+    /**
+     * Logger de la clase para registrar eventos o errores.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(EnvioController.class);
     @Autowired
     EnvioService envioService;
 
@@ -57,10 +62,14 @@ public class EnvioController {
             @ApiResponse(responseCode = "404", description = "No se encontraron envios")
     })
     public ResponseEntity<?> getEnvios() {
+        logger.info("[getEnvios] Obteniendo lista de envíos.");
         List<Envio> envios = envioService.obtenerEnvios();
 
         if (envios.isEmpty()) {
+            
+            logger.warn("[getEnvios] No se encontraron envíos.");
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        
         }
 
         List<EnvioDTO> envioDTOs = envios.stream()
