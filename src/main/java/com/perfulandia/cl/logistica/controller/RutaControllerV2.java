@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,10 +29,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-
 @RestController
 @RequestMapping("/api/v2/logistica/envios/rutas")
 @Tag(name = "Rutas", description = "Operaciones relacionadas a la información de rutas,")
@@ -42,7 +41,7 @@ public class RutaControllerV2 {
     private RutaAssembler rutaAssembler;
 
     @GetMapping("")
-    @Operation(summary = "Obtener todos las rutas.", description = "Obtiene una lista de todas las rutas.")
+    @Operation(summary = "Obtener todas las rutas.", description = "Obtiene una lista de todas las rutas.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Operacion exitosa, no hay contenido."),
             @ApiResponse(responseCode = "200", description = "Operacion exitosa, devuelve lista con todas las rutas.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Ruta.class))),

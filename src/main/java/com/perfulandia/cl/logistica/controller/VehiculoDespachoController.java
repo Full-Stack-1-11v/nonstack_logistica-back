@@ -29,7 +29,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-
+/**
+ * Controlador REST para gestionar las operaciones relacionadas con los vehículos de despacho.
+ * Proporciona endpoints para crear, leer, actualizar y eliminar vehículos de despacho.
+ */
 @RestController
 @RequestMapping("/api/v1/logistica/vehiculos")
 @Tag(name = "Vehículos de Despacho", description = "Operaciones relacionadas a los vehiculos de despacho de Perfulandia")
@@ -37,7 +40,12 @@ public class VehiculoDespachoController {
 
     @Autowired
     private VehiculoDespachoService vehiculoDespachoService;
-
+    /**
+     * Obtiene una lista de todos los vehículos de despacho.
+     * <p>
+     * <b>Path:</b> {@code GET /api/v1/logistica/vehiculos}
+     * @return Un {@link ResponseEntity} con la lista de {@link VehiculoDespachoDTO} o un estado de error.
+     */
     @GetMapping("")
     @Operation(summary = "Obtener todos los vehiculos de despacho.", description = "Obtiene una lista de todos los vehiculos de despacho.")
     @ApiResponses(value = {
@@ -61,7 +69,13 @@ public class VehiculoDespachoController {
             return new ResponseEntity<>("Error : " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
+    /**
+     * Busca vehículos por un patrón en la patente.
+     * <p>
+     * <b>Path:</b> {@code GET /api/v1/logistica/vehiculos/{patron_patente}}
+     * @param patron_patente El patrón de dos letras para buscar en la patente.
+     * @return Un {@link ResponseEntity} con la lista de {@link VehiculoDespachoDTO} encontrados o un estado de error.
+     */
     @GetMapping("/{patron_patente}")
     @Operation(summary = "Obtener todos los vehiculos de despacho por patron de las dos primeras letras de la patente.", description = "Obtiene una lista de todos los vehiculos de despacho por las dos primeras letras de la petente.")
     @ApiResponses(value = {
@@ -81,7 +95,13 @@ public class VehiculoDespachoController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
-
+    /**
+     * Crea un nuevo vehículo de despacho.
+     * <p>
+     * <b>Path:</b> {@code POST /api/v1/logistica/vehiculos}
+     * @param vehiculo El objeto {@link VehiculoDespacho} a crear.
+     * @return Un {@link ResponseEntity} con el {@link VehiculoDespacho} creado y un estado CREATED, o un estado de error.
+     */
     @PostMapping("")
     @Operation(summary = "Registra un vehiculo a traves de un body")
     @ApiResponses(value = {
@@ -108,7 +128,14 @@ public class VehiculoDespachoController {
         }
 
     }
-
+    /**
+     * Actualiza completamente un vehículo de despacho existente.
+     * <p>
+     * <b>Path:</b> {@code PUT /api/v1/logistica/vehiculos/{patente}}
+     * @param vehiculo El objeto {@link VehiculoDespacho} con los nuevos datos.
+     * @param patente La patente del vehículo a actualizar.
+     * @return Un {@link ResponseEntity} con el {@link VehiculoDespacho} actualizado o un estado de error.
+     */
     @PutMapping("/{patente}")
     @Operation(summary = "Actualiza un vehiculo a traves de un body")
     @ApiResponses(value = {
@@ -134,7 +161,14 @@ public class VehiculoDespachoController {
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
+    /**
+     * Actualiza parcialmente un vehículo de despacho existente.
+     * <p>
+     * <b>Path:</b> {@code PATCH /api/v1/logistica/vehiculos/{patente}}
+     * @param vehiculo El objeto {@link VehiculoDespacho} con los campos a actualizar.
+     * @param patente La patente del vehículo a actualizar.
+     * @return Un {@link ResponseEntity} con el {@link VehiculoDespacho} actualizado o un estado de error.
+     */
     @PatchMapping("/{patente}")
     @Operation(summary = "Parcha un vehiculo a traves de un body")
     @ApiResponses(value = {
@@ -154,7 +188,13 @@ public class VehiculoDespachoController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
-
+    /**
+     * Elimina un vehículo de despacho por su patente.
+     * <p>
+     * <b>Path:</b> {@code DELETE /api/v1/logistica/vehiculos/{patente}}
+     * @param patente La patente del vehículo a eliminar.
+     * @return Un {@link ResponseEntity} con estado NO_CONTENT si se elimina correctamente, o un estado de error.
+     */
     @DeleteMapping("/{patente}")
     @Operation(summary = "Borra un vehiculo a traves de su patente")
     @ApiResponses(value = {

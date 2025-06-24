@@ -2,25 +2,32 @@ package com.perfulandia.cl.logistica.assemblers;
 
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.stereotype.Component;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import com.perfulandia.cl.logistica.controller.RutaControllerV2;
 import com.perfulandia.cl.logistica.model.Ruta;
 
+/**
+ * Assembler para convertir un objeto {@link Ruta} a un {@link EntityModel}.
+ * Agrega enlaces HATEOAS para la navegación de la API REST.
+ */
 @Component
-public class RutaAssembler implements RepresentationModelAssembler<Ruta, EntityModel<Ruta>> {
 
+
+public class RutaAssembler implements RepresentationModelAssembler<Ruta, EntityModel<Ruta>> {
+    /**
+     * Convierte un objeto {@link Ruta} a un {@link EntityModel} con enlaces HATEOAS.
+     *
+     * @param ruta el objeto {@link Ruta} a convertir.
+     * @return un {@link EntityModel} que contiene la {@link Ruta} y los enlaces HATEOAS.
+     */
     @Override
     public EntityModel<Ruta> toModel(Ruta ruta) {
         return EntityModel.of(ruta,
-                linkTo(methodOn(RutaControllerV2.class).getRutaByCoords(ruta.getCoordXInicio(), ruta.getCoordXFinal(),
-                        ruta.getCoordYInicio(), ruta.getCoordYFinal())).withRel("rutasPorCoordenadas"),
-                linkTo(methodOn(RutaControllerV2.class).putRuta(null, ruta.getIdRuta())).withRel("update"),
-                linkTo(methodOn(RutaControllerV2.class).patchRuta(null, ruta.getIdRuta())).withRel("patch"),
-                linkTo(methodOn(RutaControllerV2.class).deleteRuta(ruta.getIdRuta())).withRel("delete"),
-                linkTo(methodOn(RutaControllerV2.class).getRutas()).withSelfRel());
+                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(RutaControllerV2.class).getRutas()).withRel("rutas"),
+                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(RutaControllerV2.class).getRutaByCoords(ruta.getCoordXInicio(), ruta.getCoordXFinal(), ruta.getCoordYInicio(), ruta.getCoordYFinal())).withSelfRel()
+        );
     }
+    
 }

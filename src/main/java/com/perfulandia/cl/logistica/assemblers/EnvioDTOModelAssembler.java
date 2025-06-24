@@ -1,18 +1,28 @@
 package com.perfulandia.cl.logistica.assemblers;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import org.springframework.stereotype.Component;
 
 import com.perfulandia.cl.logistica.controller.EnvioControllerV2;
 import com.perfulandia.cl.logistica.dto.EnvioDTO;
-
+/**
+ * Assembler para convertir un {@link EnvioDTO} a un {@link EntityModel}.
+ * Agrega enlaces HATEOAS para la navegación de la API REST.
+ */
 @Component
+
+
 public class EnvioDTOModelAssembler implements RepresentationModelAssembler<EnvioDTO, EntityModel<EnvioDTO>> {
 
+    /**
+     * Convierte un objeto {@link EnvioDTO} a un {@link EntityModel} con enlaces HATEOAS.
+     *
+     * @param envioDTO el objeto {@link EnvioDTO} a convertir.
+     * @return un {@link EntityModel} que contiene el {@link EnvioDTO} y los enlaces HATEOAS.
+     */
     @Override
     public EntityModel<EnvioDTO> toModel(EnvioDTO envioDTO) {
         return EntityModel.of(envioDTO,

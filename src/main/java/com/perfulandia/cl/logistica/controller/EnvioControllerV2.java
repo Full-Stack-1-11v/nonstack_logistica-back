@@ -36,6 +36,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+/**
+ * Controlador REST para gestionar las operaciones relacionadas con los envíos, versión 2.
+ * Proporciona endpoints HATEOAS para crear, leer, actualizar y eliminar envíos.
+ */
 @RestController
 @RequestMapping("/api/v2/logistica/envios")
 public class EnvioControllerV2 {
@@ -46,6 +50,12 @@ public class EnvioControllerV2 {
     @Autowired
     private EnvioDTOModelAssembler assemblerDTO;
 
+    /**
+     * Obtiene una lista de todos los envíos con enlaces HATEOAS.
+     * <p>
+     * <b>Path:</b> {@code GET /api/v2/logistica/envios}
+     * @return Un {@link ResponseEntity} con un {@link CollectionModel} de {@link EntityModel} de {@link EnvioDTO}, o un estado NO_CONTENT si no hay envíos.
+     */
     @GetMapping("")
     @Operation(summary = "Obtener todos los envios", description = "Obtiene una lista de todas las carreras")
     @ApiResponses(value = {
@@ -69,6 +79,13 @@ public class EnvioControllerV2 {
         return new ResponseEntity<>(collectionModel, HttpStatus.OK);
     }
 
+    /**
+     * Obtiene un envío específico por su ID con enlaces HATEOAS.
+     * <p>
+     * <b>Path:</b> {@code GET /api/v2/logistica/envios/{id}}
+     * @param id El ID del envío a obtener.
+     * @return Un {@link ResponseEntity} con el {@link EntityModel} del {@link EnvioDTO} correspondiente, o un estado NOT_FOUND si no se encuentra.
+     */
     @GetMapping("/{id}")
     @Operation(summary = "Obtiene datos de un envios.", description = "A traves de la id de un envio obtiene los detalles de este.")
     @ApiResponses(value = {
@@ -87,6 +104,14 @@ public class EnvioControllerV2 {
         return ResponseEntity.notFound().build();
     }
 
+    /**
+     * Busca envíos dentro de un rango de fechas especificado y devuelve una colección con enlaces HATEOAS.
+     * <p>
+     * <b>Path:</b> {@code GET /api/v2/logistica/envios/buscar-por-fecha/{fechaInicio}/{fechaFin}}
+     * @param fechaInicio La fecha de inicio del rango de búsqueda.
+     * @param fechaFin La fecha de fin del rango de búsqueda.
+     * @return Un {@link ResponseEntity} con un {@link CollectionModel} de {@link EntityModel} de {@link EnvioDTO} encontrados, o un estado NO_CONTENT si no hay resultados.
+     */
     @GetMapping("/buscar-por-fecha/{fechaInicio}/{fechaFin}")
     @Operation(summary = "Obtiene envios en un rango de fecha determinado.", description = "A traves del rango de fecha entrega una lista de envios")
     @ApiResponses(value = {
@@ -111,8 +136,15 @@ public class EnvioControllerV2 {
         CollectionModel<EntityModel<EnvioDTO>> collectionModel = CollectionModel.of(enviosHateoas);
 
         return new ResponseEntity<>(collectionModel, HttpStatus.OK);
-
-    }
+}
+    
+    /**
+     * Crea un nuevo envío y devuelve su representación HATEOAS.
+     * <p>
+     * <b>Path:</b> {@code POST /api/v2/logistica/envios}
+     * @param envio El objeto {@link Envio} a crear.
+     * @return Un {@link ResponseEntity} con el {@link EntityModel} del {@link EnvioDTO} creado y un estado CREATED, o INTERNAL_SERVER_ERROR si falla.
+     */
 
     @PostMapping("")
     @Operation(summary = "Registra un envio a traves de un body")
@@ -149,6 +181,15 @@ public class EnvioControllerV2 {
 
     }
 
+    /**
+     * Actualiza completamente un envío existente y devuelve su representación HATEOAS.
+     * <p>
+     * <b>Path:</b> {@code PUT /api/v2/logistica/envios/{id}}
+     * @param id El ID del envío a actualizar.
+     * @param envio El objeto {@link Envio} con los nuevos datos.
+     * @return Un {@link ResponseEntity} con el {@link EntityModel} del {@link EnvioDTO} actualizado o un estado NOT_FOUND si no se encuentra.
+     */
+
     @PutMapping("/{id}")
     @Operation(summary = "Actualiza un envio a traves de un body y la id")
     @ApiResponses(value = {
@@ -182,6 +223,14 @@ public class EnvioControllerV2 {
         }
     }
 
+    /**
+     * Actualiza parcialmente un envío existente y devuelve su representación HATEOAS.
+     * <p>
+     * <b>Path:</b> {@code PATCH /api/v2/logistica/envios/{id}}
+     * @param id El ID del envío a actualizar.
+     * @param envio El objeto {@link Envio} con los campos a actualizar.
+     * @return Un {@link ResponseEntity} con el {@link EntityModel} del {@link EnvioDTO} actualizado o un estado BAD_REQUEST si ocurre un error.
+     */
     @PatchMapping("/{id}")
     @Operation(summary = "Parcha un envio a traves de un body y la id")
     @ApiResponses(value = {
@@ -216,7 +265,13 @@ public class EnvioControllerV2 {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
-
+    /**
+     * Elimina un envío por su ID.
+     * <p>
+     * <b>Path:</b> {@code DELETE /api/v2/logistica/envios/{id}}
+     * @param id El ID del envío a eliminar.
+     * @return Un {@link ResponseEntity} con estado NO_CONTENT si se elimina correctamente, o NOT_FOUND si no se encuentra.
+     */
     @DeleteMapping("/{id}")
     @Operation(summary = "Borra un envio usando su id")
     @ApiResponses(value = {

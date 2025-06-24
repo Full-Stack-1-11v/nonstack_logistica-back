@@ -31,7 +31,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-
+/**
+ * Controlador REST para gestionar las operaciones relacionadas con las guías de despacho, versión 2.
+ * Proporciona endpoints HATEOAS para crear, leer, actualizar y eliminar guías de despacho.
+ */
 @RestController
 @RequestMapping("/api/v2/logistica/despachos")
 @Tag(name = "Guias de Despacho", description = "Operaciones relacionadas a las guias de despacho de Perfulandia")
@@ -43,6 +46,12 @@ public class GuiaDespachoControllerV2 {
     @Autowired
     GuiaDespachoAssembler assembler;
 
+    /**
+     * Obtiene una lista de todas las guías de despacho con enlaces HATEOAS.
+     * <p>
+     * <b>Path:</b> {@code GET /api/v2/logistica/despachos}
+     * @return Un {@link ResponseEntity} con un {@link CollectionModel} de {@link EntityModel} de {@link GuiaDespacho}, o un estado de error.
+     */
     @GetMapping("")
     @Operation(summary = "Obtener todos las guias de despacho", description = "Obtiene una lista de todas las guias de despacho")
     @ApiResponses(value = {
@@ -72,6 +81,13 @@ public class GuiaDespachoControllerV2 {
 
     }
 
+    /**
+     * Obtiene una guía de despacho específica por su ID con enlaces HATEOAS.
+     * <p>
+     * <b>Path:</b> {@code GET /api/v2/logistica/despachos/{id}}
+     * @param id El ID de la guía de despacho a obtener.
+     * @return Un {@link ResponseEntity} con el {@link EntityModel} de la {@link GuiaDespacho} encontrada o un estado NOT_FOUND.
+     */
     @GetMapping("/{id}")
     @Operation(summary = "Obtener guia de despacho por id", description = "Obtiene una guia de despacho")
     @ApiResponses(value = {
@@ -90,6 +106,13 @@ public class GuiaDespachoControllerV2 {
         }
     }
 
+    /**
+     * Crea una nueva guía de despacho y devuelve su representación HATEOAS.
+     * <p>
+     * <b>Path:</b> {@code POST /api/v2/logistica/despachos}
+     * @param guiaDespacho El objeto {@link GuiaDespacho} a crear.
+     * @return Un {@link ResponseEntity} con el {@link EntityModel} de la {@link GuiaDespacho} creada y un estado CREATED, o un error del servidor.
+     */
     @PostMapping()
     @Operation(summary = "Registra una guia de despacho traves de un body")
     @ApiResponses(value = {
@@ -110,6 +133,15 @@ public class GuiaDespachoControllerV2 {
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    /**
+     * Actualiza completamente una guía de despacho existente y devuelve su representación HATEOAS.
+     * <p>
+     * <b>Path:</b> {@code PUT /api/v2/logistica/despachos/{id}}
+     * @param id El ID de la guía de despacho a actualizar.
+     * @param guiaDespacho El objeto {@link GuiaDespacho} con los nuevos datos.
+     * @return Un {@link ResponseEntity} con el {@link EntityModel} de la {@link GuiaDespacho} actualizada o un error del servidor.
+     */
 
     @PutMapping("/{id}")
     @Operation(summary = "Actualiza una guia de despacho a traves de un body y la id")
@@ -133,6 +165,15 @@ public class GuiaDespachoControllerV2 {
         }
     }
 
+    /**
+     * Actualiza parcialmente una guía de despacho existente y devuelve su representación HATEOAS.
+     * <p>
+     * <b>Path:</b> {@code PATCH /api/v2/logistica/despachos/{id}}
+     * @param id El ID de la guía de despacho a actualizar.
+     * @param guiaDespacho El objeto {@link GuiaDespacho} con los campos a actualizar.
+     * @return Un {@link ResponseEntity} con el {@link EntityModel} de la {@link GuiaDespacho} actualizada o un error del servidor.
+     */
+
     @PatchMapping("/{id}")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Operacion exitosa, devuelve el envio parchado.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GuiaDespacho.class))),
@@ -154,6 +195,15 @@ public class GuiaDespachoControllerV2 {
         }
     }
 
+        
+    /**
+     * Elimina una guía de despacho por su ID.
+     * <p>
+     * <b>Path:</b> {@code DELETE /api/v2/logistica/despachos/{id}}
+     * @param id El ID de la guía de despacho a eliminar.
+     * @return Un {@link ResponseEntity} con estado NO_CONTENT si se elimina correctamente, o NOT_FOUND si no se encuentra.
+     */
+    
     @DeleteMapping("/{id}")
     @Operation(summary = "Borra un despacho usando su id")
     @ApiResponses(value = {

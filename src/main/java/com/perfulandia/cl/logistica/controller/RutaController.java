@@ -27,6 +27,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+/**
+ * Controlador REST para gestionar las operaciones relacionadas con las rutas.
+ * Proporciona endpoints para crear, leer, actualizar y eliminar rutas.
+ */
 @RestController
 @RequestMapping("/api/v1/logistica/envios/rutas")
 @Tag(name = "Rutas", description = "Operaciones relacionadas a la información de rutas,")
@@ -34,6 +38,13 @@ public class RutaController {
 
     @Autowired
     private RutaService rutaService;
+
+    /**
+     * Obtiene una lista de todas las rutas.
+     * <p>
+     * <b>Path:</b> {@code GET /api/v1/logistica/envios/rutas}
+     * @return Un {@link ResponseEntity} con la lista de {@link Ruta} o un estado NO_CONTENT si no hay rutas.
+     */
 
     @GetMapping("")
     @Operation(summary = "Obtener todos las rutas.", description = "Obtiene una lista de todas las rutas.")
@@ -56,6 +67,16 @@ public class RutaController {
         }
     }
 
+    /**
+     * Obtiene rutas dentro de un rango de coordenadas.
+     * <p>
+     * <b>Path:</b> {@code GET /api/v1/logistica/envios/rutas/{x_1}/{x_2}/{y_1}/{y_2}}
+     * @param x_1 Coordenada X inicial.
+     * @param x_2 Coordenada X final.
+     * @param y_1 Coordenada Y inicial.
+     * @param y_2 Coordenada Y final.
+     * @return Un {@link ResponseEntity} con la lista de {@link Ruta} encontradas o un estado NO_CONTENT.
+     */
     @GetMapping("/{x_1}/{x_2}/{y_1}/{y_2}")
     @Operation(summary = "Obtener todos las rutas en un rango de coordenadas", description = "Obtiene una lista de todas las rutas dependiendo de las coordenadas iniciales y finales.")
     @ApiResponses(value = {
@@ -83,6 +104,13 @@ public class RutaController {
 
     }
 
+    /**
+     * Crea una nueva ruta.
+     * <p>
+     * <b>Path:</b> {@code POST /api/v1/logistica/envios/rutas}
+     * @param nuevaRuta El objeto {@link Ruta} a crear.
+     * @return Un {@link ResponseEntity} con la {@link Ruta} creada y un estado CREATED, o un error del servidor.
+     */
     @PostMapping("")
     @Operation(summary = "Registra una ruta a traves de un body")
     @ApiResponses(value = {
@@ -99,6 +127,14 @@ public class RutaController {
         }
     }
 
+    /**
+     * Actualiza completamente una ruta existente.
+     * <p>
+     * <b>Path:</b> {@code PUT /api/v1/logistica/envios/rutas/{idRuta}}
+     * @param ruta El objeto {@link Ruta} con los nuevos datos.
+     * @param idRuta El ID de la ruta a actualizar.
+     * @return Un {@link ResponseEntity} con la {@link Ruta} actualizada o un error del servidor.
+     */
     @PutMapping("/{idRuta}")
     @Operation(summary = "Actualiza una ruta a traves de un body y la id")
     @ApiResponses(value = {
@@ -120,6 +156,14 @@ public class RutaController {
         }
     }
 
+    /**
+     * Actualiza parcialmente una ruta existente.
+     * <p>
+     * <b>Path:</b> {@code PATCH /api/v1/logistica/envios/rutas/{idRuta}}
+     * @param ruta El objeto {@link Ruta} con los campos a actualizar.
+     * @param idRuta El ID de la ruta a actualizar.
+     * @return Un {@link ResponseEntity} con la {@link Ruta} actualizada o un error del servidor.
+     */
     @PatchMapping("/{idRuta}")
     @Operation(summary = "Parcha una ruta a traves de un body y la id")
     @ApiResponses(value = {
@@ -140,7 +184,14 @@ public class RutaController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
+    
+    /**
+     * Elimina una ruta por su ID.
+     * <p>
+     * <b>Path:</b> {@code DELETE /api/v1/logistica/envios/rutas/{idRuta}}
+     * @param idRuta El ID de la ruta a eliminar.
+     * @return Un {@link ResponseEntity} con estado NO_CONTENT si se elimina correctamente, o un error del servidor.
+     */
     @DeleteMapping("/{idRuta}")
     @Operation(summary = "Borra una ruta usando su id")
     @ApiResponses(value = {

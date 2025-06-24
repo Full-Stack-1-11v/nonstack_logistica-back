@@ -10,10 +10,20 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import com.perfulandia.cl.logistica.controller.GuiaDespachoController;
 import com.perfulandia.cl.logistica.controller.GuiaDespachoControllerV2;
 import com.perfulandia.cl.logistica.model.GuiaDespacho;
-
+/**
+ * Assembler para convertir un {@link GuiaDespacho} a un {@link EntityModel}.
+ * Agrega enlaces HATEOAS para la navegación de la API REST.
+ */
 @Component
+
 public class GuiaDespachoAssembler implements RepresentationModelAssembler<GuiaDespacho, EntityModel<GuiaDespacho>>{
 
+    /**
+     * Convierte un objeto {@link GuiaDespacho} a un {@link EntityModel} con enlaces HATEOAS.
+     *
+     * @param guiaDespacho el objeto {@link GuiaDespacho} a convertir.
+     * @return un {@link EntityModel} que contiene el {@link GuiaDespacho} y los enlaces HATEOAS.
+     */
 @Override
     public EntityModel<GuiaDespacho> toModel(GuiaDespacho guiaDespacho) {
 

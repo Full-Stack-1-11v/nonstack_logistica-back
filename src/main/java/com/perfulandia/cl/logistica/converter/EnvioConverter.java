@@ -3,8 +3,18 @@ package com.perfulandia.cl.logistica.converter;
 import com.perfulandia.cl.logistica.dto.EnvioDTO;
 import com.perfulandia.cl.logistica.model.Envio;
 
+/**
+ * Clase de utilidad para convertir entidades {@link Envio} a objetos de transferencia de datos {@link EnvioDTO}.
+ * Esta clase proporciona métodos estáticos para realizar la conversión.
+ */
 public class EnvioConverter {
-
+    /**
+     * Convierte un objeto de entidad {@link Envio} a un objeto {@link EnvioDTO}.
+     * Mapea los campos de la entidad a los campos correspondientes del DTO.
+     *
+     * @param envio el objeto de entidad {@link Envio} a convertir.
+     * @return el objeto {@link EnvioDTO} resultante.
+     */
     public static EnvioDTO convertToDTO(Envio envio) {
         EnvioDTO dto = new EnvioDTO();
         dto.setIdEnvio(envio.getIdEnvio());

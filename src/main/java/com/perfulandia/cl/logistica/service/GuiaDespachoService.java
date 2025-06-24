@@ -12,17 +12,30 @@ import com.perfulandia.cl.logistica.repository.GuiaDespachoRepository;
 
 import jakarta.transaction.Transactional;
 
+/**
+ * Servicio para gestionar la lógica de negocio de las guías de despacho.
+ * Proporciona métodos para crear, leer, actualizar y eliminar guías de despacho.
+ */
 @Service
 public class GuiaDespachoService {
 
     @Autowired
     private GuiaDespachoRepository guiaDespachoRepository;
 
+    /**
+     * Obtiene una lista de todas las guías de despacho.
+     * @return una lista de todas las entidades {@link GuiaDespacho}.
+     */
     public List<GuiaDespacho> verGuiaDespachos() {
 
         return guiaDespachoRepository.findAll();
     }
     
+    /**
+     * Crea una nueva guía de despacho.
+     * @param nuevaGuiaDespacho el objeto {@link GuiaDespacho} a crear.
+     * @return la {@link GuiaDespacho} guardada.
+     */
     @Transactional
     public GuiaDespacho crearGuiaDespacho(GuiaDespacho nuevaGuiaDespacho) {
 
@@ -30,6 +43,11 @@ public class GuiaDespachoService {
 
     }
 
+    /**
+     * Obtiene una guía de despacho por su ID.
+     * @param id el ID de la guía de despacho a buscar.
+     * @return un {@link Optional} que contiene la {@link GuiaDespacho} si se encuentra, o vacío si no.
+     */
     @Transactional
     public Optional<GuiaDespacho> obtenerGuiaDespachoPorId(Integer id){
         Optional<GuiaDespacho> guiaDespacho = guiaDespachoRepository.findById(id);
@@ -37,6 +55,13 @@ public class GuiaDespachoService {
         return guiaDespacho;
     }
 
+    /**
+     * Actualiza completamente una guía de despacho existente (operación PUT).
+     * @param guiaDespacho el objeto {@link GuiaDespacho} con los nuevos datos.
+     * @param id el ID de la guía de despacho a actualizar.
+     * @return la {@link GuiaDespacho} actualizada.
+     * @throws RuntimeException si no se encuentra una guía de despacho con el ID proporcionado.
+     */
     @Transactional
     public GuiaDespacho putGuiaDespacho(GuiaDespacho guiaDespacho, Integer id) {
 
@@ -52,6 +77,14 @@ public class GuiaDespachoService {
         }
     }
 
+    /**
+     * Actualiza parcialmente una guía de despacho existente (operación PATCH).
+     * @param guiaDespacho el objeto {@link GuiaDespacho} con los campos a actualizar.
+     * @param id el ID de la guía de despacho a actualizar.
+     * @return la {@link GuiaDespacho} actualizada.
+     * @throws RuntimeCryptoException si no se encuentra la guía de despacho.
+     * @throws RuntimeException si el objeto de parcheo está vacío.
+     */
     @Transactional
     public GuiaDespacho parcharGuiaDespacho(GuiaDespacho guiaDespacho, Integer id) {
 
@@ -75,6 +108,11 @@ public class GuiaDespachoService {
         }
     }
 
+    /**
+     * Elimina una guía de despacho por su ID.
+     * @param id el ID de la guía de despacho a eliminar.
+     * @throws RuntimeException si no se encuentra una guía de despacho con el ID proporcionado.
+     */
     @Transactional
     public void borrarGuiaDespacho(Integer id) {
         if (guiaDespachoRepository.existsById(id)) {

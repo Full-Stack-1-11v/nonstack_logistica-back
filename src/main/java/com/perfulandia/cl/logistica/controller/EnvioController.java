@@ -31,6 +31,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+/**
+ * Controlador REST para gestionar las operaciones relacionadas con los envíos.
+ * Proporciona endpoints para crear, leer, actualizar y eliminar envíos.
+ */
 @RestController
 @RequestMapping("/api/v1/logistica/envios")
 @Tag(name = "Envios", description = "Operaciones relacionadas a los envios de Perfulandia")
@@ -38,6 +42,13 @@ public class EnvioController {
 
     @Autowired
     EnvioService envioService;
+
+    /**
+     * Obtiene una lista de todos los envíos.
+     * <p>
+     * <b>Path:</b> {@code GET /api/v1/logistica/envios}
+     * @return Un {@link ResponseEntity} con la lista de {@link EnvioDTO} o un estado NO_CONTENT si no hay envíos.
+     */
 
     @GetMapping("")
     @Operation(summary = "Obtener todos los envios", description = "Obtiene una lista de todas las carreras")
@@ -59,6 +70,13 @@ public class EnvioController {
         return ResponseEntity.ok(envioDTOs);
     }
 
+    /**
+     * Obtiene un envío específico por su ID.
+     * <p>
+     * <b>Path:</b> {@code GET /api/v1/logistica/envios/{id}}
+     * @param id El ID del envío a obtener.
+     * @return Un {@link ResponseEntity} con el {@link EnvioDTO} correspondiente o un estado NOT_FOUND si no se encuentra.
+     */
     @GetMapping("/{id}")
     @Operation(summary = "Obtiene datos de un envios.", description = "A traves de la id de un envio obtiene los detalles de este.")
     @ApiResponses(value = {
@@ -75,6 +93,14 @@ public class EnvioController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+        /**
+     * Busca envíos dentro de un rango de fechas especificado.
+     * <p>
+     * <b>Path:</b> {@code GET /api/v1/logistica/envios/buscar-por-fecha/{fechaInicio}/{fechaFin}}
+     * @param fechaInicio La fecha de inicio del rango de búsqueda.
+     * @param fechaFin La fecha de fin del rango de búsqueda.
+     * @return Un {@link ResponseEntity} con la lista de {@link EnvioDTO} encontrados o un estado BAD_REQUEST si ocurre un error.
+     */
     @GetMapping("/buscar-por-fecha/{fechaInicio}/{fechaFin}")
     @Operation(summary = "Obtiene envios en un rango de fecha determinado.", description = "A traves del rango de fecha entrega una lista de envios")
     @ApiResponses(value = {
@@ -95,6 +121,13 @@ public class EnvioController {
         }
     }
 
+    /**
+     * Crea un nuevo envío.
+     * <p>
+     * <b>Path:</b> {@code POST /api/v1/logistica/envios}
+     * @param envio El objeto {@link Envio} a crear.
+     * @return Un {@link ResponseEntity} con el {@link EnvioDTO} creado y un estado CREATED, o INTERNAL_SERVER_ERROR si falla.
+     */
     @PostMapping("")
     @Operation(summary = "Registra un envio a traves de un body")
     @ApiResponses(value = {
@@ -129,6 +162,14 @@ public class EnvioController {
 
     }
 
+    /**
+     * Actualiza completamente un envío existente.
+     * <p>
+     * <b>Path:</b> {@code PUT /api/v1/logistica/envios/{id}}
+     * @param id El ID del envío a actualizar.
+     * @param envio El objeto {@link Envio} con los nuevos datos.
+     * @return Un {@link ResponseEntity} con el {@link EnvioDTO} actualizado o un estado NOT_FOUND si no se encuentra.
+     */
     @PutMapping("/{id}")
     @Operation(summary = "Actualiza un envio a traves de un body y la id")
     @ApiResponses(value = {
@@ -161,6 +202,14 @@ public class EnvioController {
         }
     }
 
+    /**
+     * Actualiza parcialmente un envío existente.
+     * <p>
+     * <b>Path:</b> {@code PATCH /api/v1/logistica/envios/{id}}
+     * @param id El ID del envío a actualizar.
+     * @param envio El objeto {@link Envio} con los campos a actualizar.
+     * @return Un {@link ResponseEntity} con el {@link EnvioDTO} actualizado o un estado BAD_REQUEST si ocurre un error.
+     */
     @PatchMapping("/{id}")
     @Operation(summary = "Parcha un envio a traves de un body y la id")
     @ApiResponses(value = {
@@ -189,6 +238,13 @@ public class EnvioController {
         }
     }
 
+    /**
+     * Elimina un envío por su ID.
+     * <p>
+     * <b>Path:</b> {@code DELETE /api/v1/logistica/envios/{id}}
+     * @param id El ID del envío a eliminar.
+     * @return Un {@link ResponseEntity} con estado NO_CONTENT si se elimina correctamente, o NOT_FOUND si no se encuentra.
+     */
     @DeleteMapping("/{id}")
     @Operation(summary = "Borra un envio usando su id")
     @ApiResponses(value = {
