@@ -8,6 +8,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import com.perfulandia.cl.logistica.controller.GuiaDespachoController;
+import com.perfulandia.cl.logistica.controller.GuiaDespachoControllerV2;
 import com.perfulandia.cl.logistica.model.GuiaDespacho;
 
 @Component
@@ -15,11 +16,14 @@ public class GuiaDespachoAssembler implements RepresentationModelAssembler<GuiaD
 
 @Override
     public EntityModel<GuiaDespacho> toModel(GuiaDespacho guiaDespacho) {
+
+        GuiaDespacho dummyGuiaDespacho = new GuiaDespacho();
+
         return EntityModel.of(guiaDespacho,
-                linkTo(methodOn(GuiaDespachoController.class).getGuiaDespachoById(guiaDespacho.getIdDespacho())).withSelfRel(),
-                linkTo(methodOn(GuiaDespachoController.class).putGuiaDespacho(guiaDespacho.getIdDespacho(), null)).withRel("update"),
-                linkTo(methodOn(GuiaDespachoController.class).patchGuiaDespacho(guiaDespacho.getIdDespacho(), null)).withRel("patch"),
-                linkTo(methodOn(GuiaDespachoController.class).deleteGuiaDespacho(guiaDespacho.getIdDespacho())).withRel("delete"));
+                linkTo(methodOn(GuiaDespachoControllerV2.class).getGuiaDespachoById(guiaDespacho.getIdDespacho())).withSelfRel(),
+                linkTo(methodOn(GuiaDespachoControllerV2.class).putGuiaDespacho(guiaDespacho.getIdDespacho(), dummyGuiaDespacho)).withRel("update"),
+                linkTo(methodOn(GuiaDespachoControllerV2.class).patchGuiaDespacho(guiaDespacho.getIdDespacho(), dummyGuiaDespacho)).withRel("patch"),
+                linkTo(methodOn(GuiaDespachoControllerV2.class).deleteGuiaDespacho(guiaDespacho.getIdDespacho())).withRel("delete"));
     }
 
 }

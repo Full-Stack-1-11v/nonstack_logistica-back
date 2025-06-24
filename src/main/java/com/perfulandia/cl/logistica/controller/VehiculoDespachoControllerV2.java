@@ -153,11 +153,10 @@ public class VehiculoDespachoControllerV2 {
             @PathVariable @Parameter(description = "Patente del vehiculo a actualizar", required = true) String patente) {
         try {
             VehiculoDespacho vehiculoExistente = vehiculoDespachoService.actualizarVehiculoDespacho(vehiculo, patente);
-            EntityModel<VehiculoDespacho> vehiculoEntity = vehiculoDespachoAssembler.toModel(vehiculoExistente);
             if (vehiculoExistente == null) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
-
+            EntityModel<VehiculoDespacho> vehiculoEntity = vehiculoDespachoAssembler.toModel(vehiculoExistente);
             return new ResponseEntity<>(vehiculoEntity, HttpStatus.OK);
         } catch (Exception e) {
             System.out.println("Error al actualizar el vehiculo");

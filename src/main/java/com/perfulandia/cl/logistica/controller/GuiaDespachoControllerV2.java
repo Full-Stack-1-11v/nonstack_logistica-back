@@ -16,9 +16,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-
 import java.util.List;
-
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
@@ -40,7 +39,7 @@ public class GuiaDespachoControllerV2 {
 
     @Autowired
     private GuiaDespachoService guiaDespachoService;
-    
+
     @Autowired
     GuiaDespachoAssembler assembler;
 
@@ -59,8 +58,8 @@ public class GuiaDespachoControllerV2 {
             }
 
             List<EntityModel<GuiaDespacho>> despachosHateoas = despachos.stream()
-                                                .map(assembler::toModel)
-                                                .toList();
+                    .map(assembler::toModel)
+                    .toList();
 
             CollectionModel<EntityModel<GuiaDespacho>> collection = CollectionModel.of(despachosHateoas);
 
@@ -71,6 +70,24 @@ public class GuiaDespachoControllerV2 {
 
         }
 
+    }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "Obtener guia de despacho por id", description = "Obtiene una guia de despacho")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Operacion exitosa, devuelve el despacho."),
+            @ApiResponse(responseCode = "404", description = "No encontrado.")
+    }) // Change to path variable
+    public ResponseEntity<EntityModel<GuiaDespacho>> getGuiaDespachoById(
+            @Parameter(description = "Id guia despacho a buscar", required = true) @PathVariable Integer id) {
+        Optional<GuiaDespacho> guiaOpt = guiaDespachoService.obtenerGuiaDespachoPorId(id);
+        if (guiaOpt.isPresent()) {
+            GuiaDespacho guiaDespacho = guiaOpt.get();
+            EntityModel<GuiaDespacho> guiaEntity = assembler.toModel(guiaDespacho);
+            return new ResponseEntity<>(guiaEntity, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @PostMapping()
@@ -86,7 +103,7 @@ public class GuiaDespachoControllerV2 {
                     "}") GuiaDespacho guiaDespacho) {
         try {
             GuiaDespacho guiaDespachoCreada = guiaDespachoService.crearGuiaDespacho(guiaDespacho);
-            EntityModel<GuiaDespacho> guiaDespachoHateoas= assembler.toModel(guiaDespachoCreada);
+            EntityModel<GuiaDespacho> guiaDespachoHateoas = assembler.toModel(guiaDespachoCreada);
             return new ResponseEntity<>(guiaDespachoHateoas, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(
@@ -109,7 +126,7 @@ public class GuiaDespachoControllerV2 {
         try {
             GuiaDespacho guiaDespachoParchada = guiaDespachoService.putGuiaDespacho(guiaDespacho, id);
             EntityModel<GuiaDespacho> guiaDespachoHateoas = assembler.toModel(guiaDespachoParchada);
-            return new ResponseEntity<>(guiaDespachoHateoas,HttpStatus.OK);
+            return new ResponseEntity<>(guiaDespachoHateoas, HttpStatus.OK);
 
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -144,9 +161,9 @@ public class GuiaDespachoControllerV2 {
             @ApiResponse(responseCode = "404", description = "No se encontro el despacho.")
     })
     public ResponseEntity<?> deleteGuiaDespacho(
-    @Parameter(description = "Borra una guia de despacho a traves de su id como path variable")
-    
-    @PathVariable Integer id) {
+            @Parameter(description = "Borra una guia de despacho a traves de su id como path variable")
+
+            @PathVariable Integer id) {
         try {
             guiaDespachoService.borrarGuiaDespacho(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
