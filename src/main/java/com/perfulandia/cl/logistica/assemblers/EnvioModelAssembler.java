@@ -5,18 +5,21 @@ import org.springframework.hateoas.server.RepresentationModelAssembler;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import org.springframework.stereotype.Component;
+import org.springframework.lang.NonNull;
 
 import com.perfulandia.cl.logistica.controller.EnvioControllerV2;
 import com.perfulandia.cl.logistica.model.Envio;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Assembler para convertir un {@link Envio} a un {@link EntityModel}.
  * Agrega enlaces HATEOAS para la navegación de la API REST.
  */
 @Component
-
-
 public class EnvioModelAssembler implements RepresentationModelAssembler<Envio, EntityModel<Envio>> {
+
+    private static final Logger log = LoggerFactory.getLogger(EnvioModelAssembler.class);
 
     /**
      * Convierte un objeto {@link Envio} a un {@link EntityModel} con enlaces HATEOAS.
@@ -25,7 +28,9 @@ public class EnvioModelAssembler implements RepresentationModelAssembler<Envio, 
      * @return un {@link EntityModel} que contiene el {@link Envio} y los enlaces HATEOAS.
      */
     @Override
-    public EntityModel<Envio> toModel(Envio envio) {
+    @NonNull
+    public EntityModel<Envio> toModel(@NonNull Envio envio) {
+        log.info("[EnvioModelAssembler.toModel] Assembling Envio to EntityModel for Envio with id {}", envio.getIdEnvio());
         return EntityModel.of(envio,
                 linkTo(methodOn(EnvioControllerV2.class).getEnvioPorId(envio.getIdEnvio())).withSelfRel(),
                 linkTo(methodOn(EnvioControllerV2.class).getEnvios()).withRel("envios"),

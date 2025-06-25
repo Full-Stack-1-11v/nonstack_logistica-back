@@ -2,6 +2,8 @@ package com.perfulandia.cl.logistica.controller;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +38,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 @Tag(name = "Rutas", description = "Operaciones relacionadas a la información de rutas,")
 public class RutaController {
 
+    private static final Logger logger = LoggerFactory.getLogger(RutaController.class);
+
     @Autowired
     private RutaService rutaService;
 
@@ -54,15 +58,19 @@ public class RutaController {
             @ApiResponse(responseCode = "500", description = "Error interno del sevidor.")
     })
     public ResponseEntity<?> getRutas() {
+        logger.info("Obteniendo todas las rutas");
         try {
             List<Ruta> rutas = rutaService.getAllRutas();
 
             if (rutas.isEmpty()) {
+                logger.info("No se encontraron rutas");
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
 
+            logger.info("Se encontraron {} rutas", rutas.size());
             return ResponseEntity.ok(rutas);
         } catch (Exception e) {
+            logger.error("Error al obtener rutas", e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -89,16 +97,19 @@ public class RutaController {
             @Parameter(description = "Coordenada X final de la ruta", required = true) @PathVariable Float x_2,
             @Parameter(description = "Coordenada Y inicial de la ruta", required = true) @PathVariable Float y_1,
             @Parameter(description = "Coordenada Y final de la ruta", required = true) @PathVariable Float y_2) {
-
+        logger.info("Buscando rutas por coordenadas: x_1={}, x_2={}, y_1={}, y_2={}", x_1, x_2, y_1, y_2);
         try {
             List<Ruta> rutasEncontradas = rutaService.buscarRutasPorCoordenadas(x_1, x_2, y_1, y_2);
-            if (rutasEncontradas.size() == 0) {
+            if (rutasEncontradas.isEmpty()) {
+                logger.info("No se encontraron rutas para las coordenadas dadas");
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
 
+            logger.info("Se encontraron {} rutas", rutasEncontradas.size());
             return ResponseEntity.ok(rutasEncontradas);
 
         } catch (Exception e) {
+            logger.error("Error al buscar rutas por coordenadas", e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -118,11 +129,13 @@ public class RutaController {
             @ApiResponse(responseCode = "500", description = "No se pudo registrar(erorr interno)")
     })
     public ResponseEntity<?> createRuta(@RequestBody Ruta nuevaRuta) {
-
+        logger.info("Creando nueva ruta: {}", nuevaRuta);
         try {
             rutaService.crearRuta(nuevaRuta);
+            logger.info("Ruta creada exitosamente");
             return new ResponseEntity<>(nuevaRuta, HttpStatus.CREATED);
         } catch (Exception e) {
+            logger.error("Error al crear ruta", e);
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -148,10 +161,13 @@ public class RutaController {
             "  \"coordYFinal\": -15.03\n" +
             "}") Ruta ruta,
             @Parameter(description = "Id de la ruta a realizar el PUT", required = true) @PathVariable Integer idRuta) {
+        logger.info("Actualizando ruta con id: {}", idRuta);
         try {
             Ruta rutaActualizada = rutaService.putRuta(ruta, idRuta);
+            logger.info("Ruta actualizada exitosamente: {}", rutaActualizada);
             return ResponseEntity.ok(rutaActualizada);
         } catch (Exception e) {
+            logger.error("Error al actualizar ruta", e);
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -177,10 +193,13 @@ public class RutaController {
             "  \"coordYFinal\": -15.03\n" +
             "}") Ruta ruta,
             @Parameter(description = "Id de la ruta a PATCH.", required = true) @PathVariable Integer idRuta) {
+        logger.info("Parchando ruta con id: {}", idRuta);
         try {
             Ruta rutaActualizada = rutaService.parcharRuta(ruta, idRuta);
+            logger.info("Ruta parchada exitosamente: {}", rutaActualizada);
             return ResponseEntity.ok(rutaActualizada);
         } catch (Exception e) {
+            logger.error("Error al parchar ruta", e);
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -201,10 +220,13 @@ public class RutaController {
     public ResponseEntity<?> deleteRuta(
     @Parameter(description = "Id de la ruta a eliminar." , required = true)    
     @PathVariable Integer idRuta) {
+        logger.info("Eliminando ruta con id: {}", idRuta);
         try {
             rutaService.deleteRuta(idRuta);
+            logger.info("Ruta eliminada exitosamente");
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {
+            logger.error("Error al eliminar ruta", e);
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

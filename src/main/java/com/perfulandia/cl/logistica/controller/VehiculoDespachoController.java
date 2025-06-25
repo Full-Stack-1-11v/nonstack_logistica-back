@@ -1,5 +1,7 @@
 package com.perfulandia.cl.logistica.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -38,6 +40,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 @Tag(name = "Vehículos de Despacho", description = "Operaciones relacionadas a los vehiculos de despacho de Perfulandia")
 public class VehiculoDespachoController {
 
+    private static final Logger logger = LoggerFactory.getLogger(VehiculoDespachoController.class);
+
     @Autowired
     private VehiculoDespachoService vehiculoDespachoService;
     /**
@@ -54,9 +58,11 @@ public class VehiculoDespachoController {
             @ApiResponse(responseCode = "404", description = "No se encontraron vehiculos")
     })
     public ResponseEntity<?> getVehiculosDespacho() {
+        logger.info("Obteniendo todos los vehiculos de despacho");
         try {
             List<VehiculoDespacho> vehiculos = vehiculoDespachoService.verVehiculosDespachos();
-            if (vehiculos.size() == 0) {
+            if (vehiculos.isEmpty()) {
+                logger.info("No se encontraron vehiculos de despacho");
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
 
@@ -64,8 +70,10 @@ public class VehiculoDespachoController {
                     .map(VehiculoDespachoConverter::convertDTOVehiculo)
                     .collect(Collectors.toList());
 
+            logger.info("Se encontraron {} vehiculos de despacho", vehiculos.size());
             return ResponseEntity.ok(vehiculoDespachoDTO);
         } catch (Exception e) {
+            logger.error("Error al obtener vehiculos de despacho", e);
             return new ResponseEntity<>("Error : " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -84,14 +92,17 @@ public class VehiculoDespachoController {
     })
     public ResponseEntity<?> buscarPorPatronPatente(
             @Parameter(description = "Valor de solo DOS letras", required = true, example = "AA") @PathVariable String patron_patente) {
+        logger.info("Buscando vehiculos por patron de patente: {}", patron_patente);
         try {
             List<VehiculoDespacho> vehiculosEncontrados = vehiculoDespachoService
                     .buscarVehiculoPorPatronPatente(patron_patente);
             List<VehiculoDespachoDTO> vehiculosDTO = vehiculosEncontrados.stream()
                     .map(VehiculoDespachoConverter::convertDTOVehiculo)
                     .collect(Collectors.toList());
+            logger.info("Se encontraron {} vehiculos con el patron '{}'", vehiculosDTO.size(), patron_patente);
             return ResponseEntity.ok(vehiculosDTO);
         } catch (Exception e) {
+            logger.error("Error al buscar vehiculos por patron de patente: {}", patron_patente, e);
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -114,15 +125,19 @@ public class VehiculoDespachoController {
                     "  \"patente\": \"AA-11\",\n" +
                     "  \"ano\": 2025\n" +
                     "}") VehiculoDespacho vehiculo) {
+        logger.info("Creando vehiculo de despacho: {}", vehiculo);
         try {
             VehiculoDespacho vehiculoRegistrar = vehiculoDespachoService.registrarVehiculoDespacho(vehiculo);
             if (vehiculoRegistrar == null) {
+                logger.warn("Vehiculo con patente {} ya existe", vehiculo.getPatente());
                 return new ResponseEntity<>("vehiculo con esa patente ya existe", HttpStatus.CONFLICT);
             }
 
+            logger.info("Vehiculo de despacho creado exitosamente: {}", vehiculoRegistrar);
             return new ResponseEntity<>(vehiculo, HttpStatus.CREATED);
 
         } catch (Exception e) {
+            logger.error("Error al crear vehiculo de despacho", e);
             return new ResponseEntity<>("Error al registrar el vehiculo : " + e.getMessage(),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -149,14 +164,18 @@ public class VehiculoDespachoController {
                     "  \"ano\": 2025\n" +
                     "}") VehiculoDespacho vehiculo,
             @PathVariable @Parameter(description = "Patente del vehiculo a actualizar", required = true) String patente) {
+        logger.info("Actualizando vehiculo de despacho con patente: {}", patente);
         try {
             VehiculoDespacho vehiculoExistente = vehiculoDespachoService.actualizarVehiculoDespacho(vehiculo, patente);
             if (vehiculoExistente == null) {
+                logger.warn("Vehiculo con patente {} no encontrado para actualizar", patente);
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
 
+            logger.info("Vehiculo de despacho actualizado exitosamente: {}", vehiculoExistente);
             return new ResponseEntity<>(vehiculoExistente, HttpStatus.OK);
         } catch (Exception e) {
+            logger.error("Error al actualizar vehiculo de despacho", e);
             return new ResponseEntity<>("Error al actualizar el vehiculo, contactar TI",
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -181,10 +200,13 @@ public class VehiculoDespachoController {
                     "  \"ano\": 2025\n" +
                     "}") @Parameter(description = "Patente del vehiculo a actualizar", required = true) VehiculoDespacho vehiculo,
             @PathVariable String patente) {
+        logger.info("Parchando vehiculo de despacho con patente: {}", patente);
         try {
             VehiculoDespacho vehiculoParchar = vehiculoDespachoService.parcharVehiculoDespacho(vehiculo, patente);
+            logger.info("Vehiculo de despacho parchado exitosamente: {}", vehiculoParchar);
             return ResponseEntity.ok(vehiculoParchar);
         } catch (Exception e) {
+            logger.error("Error al parchar vehiculo de despacho", e);
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -202,10 +224,13 @@ public class VehiculoDespachoController {
             @ApiResponse(responseCode = "400", description = "Operacion erronea, vehiculo no existe o request mal realizado")
     })
     public ResponseEntity<?> borrarVehiculoDespacho(@PathVariable String patente) {
+        logger.info("Eliminando vehiculo de despacho con patente: {}", patente);
         try {
             vehiculoDespachoService.borrarVehiculoDespacho(patente);
+            logger.info("Vehiculo de despacho con patente {} eliminado exitosamente", patente);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {
+            logger.error("Error al eliminar vehiculo de despacho", e);
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }

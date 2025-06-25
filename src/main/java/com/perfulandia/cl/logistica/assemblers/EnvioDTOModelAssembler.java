@@ -1,5 +1,7 @@
 package com.perfulandia.cl.logistica.assemblers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -17,6 +19,8 @@ import com.perfulandia.cl.logistica.dto.EnvioDTO;
 
 public class EnvioDTOModelAssembler implements RepresentationModelAssembler<EnvioDTO, EntityModel<EnvioDTO>> {
 
+    private static final Logger logger = LoggerFactory.getLogger(EnvioDTOModelAssembler.class);
+
     /**
      * Convierte un objeto {@link EnvioDTO} a un {@link EntityModel} con enlaces HATEOAS.
      *
@@ -25,6 +29,7 @@ public class EnvioDTOModelAssembler implements RepresentationModelAssembler<Envi
      */
     @Override
     public EntityModel<EnvioDTO> toModel(EnvioDTO envioDTO) {
+        logger.info("[EnvioDTOModelAssembler.toModel] Assembling links for EnvioDTO with id {}", envioDTO.getIdEnvio());
         return EntityModel.of(envioDTO,
                 linkTo(methodOn(EnvioControllerV2.class).getEnvioPorId(envioDTO.getIdEnvio())).withSelfRel(),
                 linkTo(methodOn(EnvioControllerV2.class).actualizarEnvio(envioDTO.getIdEnvio(), null)).withRel("update"),

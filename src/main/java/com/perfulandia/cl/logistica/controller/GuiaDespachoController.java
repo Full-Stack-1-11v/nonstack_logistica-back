@@ -1,5 +1,7 @@
 package com.perfulandia.cl.logistica.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -45,6 +47,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Tag(name = "Guias de Despacho", description = "Operaciones relacionadas a las guias de despacho de Perfulandia")
 public class GuiaDespachoController {
 
+    private static final Logger logger = LoggerFactory.getLogger(GuiaDespachoController.class);
+
     @Autowired
     private GuiaDespachoService guiaDespachoService;
     @Autowired
@@ -67,8 +71,10 @@ public class GuiaDespachoController {
     })
     public ResponseEntity<?> getDespachos() {
         try {
+            logger.info("[getDespachos] Obteniendo todas las guias de despacho");
             List<GuiaDespacho> despachos = guiaDespachoService.verGuiaDespachos();
-            if (despachos.size() == 0) {
+            if (despachos.isEmpty()) {
+                logger.warn("[getDespachos] No se encontraron guias de despacho");
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
 
@@ -79,6 +85,7 @@ public class GuiaDespachoController {
             return new ResponseEntity<>(despachosDTO, HttpStatus.OK);
 
         } catch (Exception e) {
+            logger.error("[getDespachos] Error al obtener las guias de despacho", e);
             return new ResponseEntity<>("Error : " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 
         }
@@ -94,11 +101,13 @@ public class GuiaDespachoController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<GuiaDespacho> getGuiaDespachoById(@RequestParam Integer id) {
+        logger.info("[getGuiaDespachoById] Obteniendo guia de despacho con id: {}", id);
         Optional<GuiaDespacho> guiaDespachoOptional = guiaDespachoService.obtenerGuiaDespachoPorId(id);
         if(guiaDespachoOptional.isPresent()){
             GuiaDespacho guiaDespacho = guiaDespachoOptional.get();
             return new ResponseEntity<>(guiaDespacho,HttpStatus.OK);
         } else {
+            logger.warn("[getGuiaDespachoById] No se encontró la guia de despacho con ID: {}", id);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
@@ -122,9 +131,11 @@ public class GuiaDespachoController {
                     "  \"idOrden\": 1\n" +
                     "}") GuiaDespacho guiaDespacho) {
         try {
+            logger.info("[createDespacho] Creando guia de despacho");
             guiaDespachoService.crearGuiaDespacho(guiaDespacho);
             return new ResponseEntity<>(guiaDespacho, HttpStatus.CREATED);
         } catch (Exception e) {
+            logger.error("[createDespacho] Error al crear guia de despacho", e);
             return new ResponseEntity<>("Error : " + e.getMessage() + " " + e.getLocalizedMessage(),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -152,10 +163,12 @@ public class GuiaDespachoController {
                     "  \"idOrden\": 1\n" +
                     "}") @RequestBody GuiaDespacho guiaDespacho) {
         try {
+            logger.info("[putGuiaDespacho] Actualizando guia de despacho con id: {}", id);
             GuiaDespacho guiaDespachoParchada = guiaDespachoService.putGuiaDespacho(guiaDespacho, id);
             return ResponseEntity.ok(guiaDespachoParchada);
 
         } catch (Exception e) {
+            logger.error("[putGuiaDespacho] Error al actualizar guia de despacho con id: {}", id, e);
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -180,9 +193,11 @@ public class GuiaDespachoController {
                     "  \"idOrden\": 1\n" +
                     "}") @RequestBody GuiaDespacho guiaDespacho) {
         try {
+            logger.info("[patchGuiaDespacho] Parchando guia de despacho con id: {}", id);
             GuiaDespacho guiaDespachoParchada = guiaDespachoService.parcharGuiaDespacho(guiaDespacho, id);
             return ResponseEntity.ok(guiaDespachoParchada);
         } catch (Exception e) {
+            logger.error("[patchGuiaDespacho] Error al parchar guia de despacho con id: {}", id, e);
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -206,9 +221,11 @@ public class GuiaDespachoController {
     
     @PathVariable Integer id) {
         try {
+            logger.info("[deleteGuiaDespacho] Eliminando guia de despacho con id: {}", id);
             guiaDespachoService.borrarGuiaDespacho(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {
+            logger.error("[deleteGuiaDespacho] Error al eliminar guia de despacho con id: {}", id, e);
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
@@ -221,9 +238,11 @@ public class GuiaDespachoController {
     })
     public ResponseEntity<?> getOrdenes() {
         try {
+            logger.info("[getOrdenes] Obteniendo ordenes desde Feign Client");
             List<OrdenDTO> ordenes = UserDTOService.verOrdenes();
             return ResponseEntity.ok(ordenes);
         } catch (Exception e) {
+            logger.error("[getOrdenes] Error al obtener ordenes desde Feign Client", e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

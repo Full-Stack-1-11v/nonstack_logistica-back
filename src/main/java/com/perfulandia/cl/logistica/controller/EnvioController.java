@@ -62,12 +62,12 @@ public class EnvioController {
             @ApiResponse(responseCode = "404", description = "No se encontraron envios")
     })
     public ResponseEntity<?> getEnvios() {
-        logger.info("[getEnvios] Obteniendo lista de envíos.");
+        logger.info("[getEnvios] Getting list of shipments.");
         List<Envio> envios = envioService.obtenerEnvios();
 
         if (envios.isEmpty()) {
             
-            logger.warn("[getEnvios] No se encontraron envíos.");
+            logger.warn("[getEnvios] No shipments found.");
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         
         }
@@ -94,12 +94,17 @@ public class EnvioController {
     })
     public ResponseEntity<?> getEnvioPorId(
             @Parameter(description = "ID del envio a obtener", required = true) @PathVariable Integer id) {
+        logger.info("[getEnvioPorId] Getting shipment with id: {}", id);
         return envioService.obtenerEnvioPorId(id)
                 .map(envio -> {
                     EnvioDTO envioDTO = EnvioConverter.convertToDTO(envio);
                     return ResponseEntity.ok(envioDTO);
                 })
-                .orElse(ResponseEntity.notFound().build());
+                .orElseGet(()->{
+                    logger.warn("[getEnvioPorId] Shipment with ID: {} not found", id);
+                    return ResponseEntity.notFound().build();
+
+                });
     }
 
         /**
@@ -120,13 +125,15 @@ public class EnvioController {
             @Parameter(description = "Fecha inicial (inclusive)", required = true, example = "2023-04-01") @PathVariable LocalDate fechaInicio,
             @Parameter(description = "Fecha final (inclusive)", required = true, example = "2025-12-12") @PathVariable LocalDate fechaFin) {
         try {
+            logger.info("[findEnvioByDate] Getting shipment by date range: {} / {}", fechaInicio, fechaFin);
             List<Envio> enviosEncontrados = envioService.buscarEnvioPorRangoDeFecha(fechaInicio, fechaFin);
             List<EnvioDTO> enviosDTO = enviosEncontrados.stream()
                     .map(EnvioConverter::convertToDTO)
                     .collect(Collectors.toList());
             return ResponseEntity.ok(enviosDTO);
         } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            logger.error("[findEnvioByDate] Error getting shipment by date",e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -161,11 +168,12 @@ public class EnvioController {
                     "  }\n" +
                     "}") Envio envio) {
         try {
+            logger.info("[crearEnvio] Creating shipment.");
             Envio nuevoEnvio = envioService.crearEnvio(envio);
             EnvioDTO envioDTO = EnvioConverter.convertToDTO(nuevoEnvio);
             return new ResponseEntity<>(envioDTO, HttpStatus.CREATED);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            logger.error("[crearEnvio] Error creating shipment" ,e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -201,12 +209,15 @@ public class EnvioController {
         try {
             Envio envioActualizado = envioService.actualizarEnvio(id, envio);
             if (envioActualizado != null) {
+                logger.info("[actualizarEnvio] Updating shipment with id: {}", id);
                 EnvioDTO envioDTO = EnvioConverter.convertToDTO(envioActualizado);
                 return ResponseEntity.ok(envioDTO);
             } else {
+                logger.warn("[actualizarEnvio] Shipment not found.");
                 return ResponseEntity.notFound().build();
             }
         } catch (Exception e) {
+            logger.error("[actualizarEnvio]", e);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
@@ -241,8 +252,10 @@ public class EnvioController {
         try {
             Envio envioActualizado = envioService.parcharEnvio(id, envio);
             EnvioDTO envioDTO = EnvioConverter.convertToDTO(envioActualizado);
+            logger.info("[parcharEnvio] Patching shipment.");
             return ResponseEntity.ok(envioDTO);
         } catch (Exception e) {
+            logger.error("[parcharEnvio]", e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
@@ -263,9 +276,11 @@ public class EnvioController {
     public ResponseEntity<?> eliminarEnvio(
             @Parameter(description = "Id del envio a borrar", required = true) @PathVariable Integer id) {
         try {
+            logger.info("[eliminarEnvio] Deleting shipment with id: {}", id);
             envioService.eliminarEnvio(id);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
+            logger.error("[eliminarEnvio] Error deleting shipment!", e);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }

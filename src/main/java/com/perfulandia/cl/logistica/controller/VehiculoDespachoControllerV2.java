@@ -1,5 +1,7 @@
 package com.perfulandia.cl.logistica.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -42,6 +44,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 @Tag(name = "Vehículos de Despacho", description = "Operaciones relacionadas a los vehiculos de despacho de Perfulandia")
 public class VehiculoDespachoControllerV2 {
 
+    private static final Logger logger = LoggerFactory.getLogger(VehiculoDespachoControllerV2.class);
+
     @Autowired
     private VehiculoDespachoService vehiculoDespachoService;
     @Autowired
@@ -62,9 +66,11 @@ public class VehiculoDespachoControllerV2 {
             @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     public ResponseEntity<CollectionModel<EntityModel<VehiculoDespachoDTO>>> getVehiculosDespacho() {
+        logger.info("Obteniendo todos los vehiculos de despacho");
         try {
             List<VehiculoDespacho> vehiculos = vehiculoDespachoService.verVehiculosDespachos();
-            if (vehiculos.size() == 0) {
+            if (vehiculos.isEmpty()) {
+                logger.info("No se encontraron vehiculos de despacho");
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
 
@@ -78,9 +84,10 @@ public class VehiculoDespachoControllerV2 {
                     .toList();
             CollectionModel<EntityModel<VehiculoDespachoDTO>> collectionModel = CollectionModel.of(vehiculosEntity);
 
+            logger.info("Se encontraron {} vehiculos de despacho", vehiculos.size());
             return ResponseEntity.ok(collectionModel);
         } catch (Exception e) {
-            System.out.println("Error : " + e.getMessage());
+            logger.error("Error al obtener vehiculos de despacho", e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -100,8 +107,10 @@ public class VehiculoDespachoControllerV2 {
     })
     public ResponseEntity<CollectionModel<EntityModel<VehiculoDespachoDTO>>> buscarPorPatronPatente(
             @Parameter(description = "Valor de solo DOS letras", required = true, example = "AA") @PathVariable String patron_patente) {
+        logger.info("Buscando vehiculos por patron de patente: {}", patron_patente);
         try {
             if (patron_patente.length() != 2) {
+                logger.warn("Patron de patente invalido: {}", patron_patente);
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             } else {
                 List<VehiculoDespacho> vehiculosEncontrados = vehiculoDespachoService
@@ -114,12 +123,13 @@ public class VehiculoDespachoControllerV2 {
                         .map(vehiculoDTOModelAssembler::toModel)
                         .toList();
                 CollectionModel<EntityModel<VehiculoDespachoDTO>> collectionModel = CollectionModel.of(vehiculosEntity);
+                logger.info("Se encontraron {} vehiculos con el patron '{}'", vehiculosDTO.size(), patron_patente);
                 return ResponseEntity.ok(collectionModel);
 
             }
 
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            logger.error("Error al buscar vehiculos por patron de patente: {}", patron_patente, e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -142,17 +152,20 @@ public class VehiculoDespachoControllerV2 {
                     "  \"patente\": \"AA-11\",\n" +
                     "  \"ano\": 2025\n" +
                     "}") VehiculoDespacho vehiculo) {
+        logger.info("Creando vehiculo de despacho: {}", vehiculo);
         try {
             VehiculoDespacho vehiculoRegistrar = vehiculoDespachoService.registrarVehiculoDespacho(vehiculo);
             if (vehiculoRegistrar == null) {
+                logger.warn("Vehiculo con patente {} ya existe", vehiculo.getPatente());
                 return new ResponseEntity<>(HttpStatus.CONFLICT);
             }
 
             EntityModel<VehiculoDespacho> vehiculoEntity = vehiculoDespachoAssembler.toModel(vehiculoRegistrar);
+            logger.info("Vehiculo de despacho creado exitosamente: {}", vehiculoRegistrar);
             return new ResponseEntity<>(vehiculoEntity, HttpStatus.CREATED);
 
         } catch (Exception e) {
-            System.out.println("Error al registrar el vehiculo : " + e.getMessage());
+            logger.error("Error al crear vehiculo de despacho", e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -178,15 +191,18 @@ public class VehiculoDespachoControllerV2 {
                     "  \"ano\": 2025\n" +
                     "}") VehiculoDespacho vehiculo,
             @PathVariable @Parameter(description = "Patente del vehiculo a actualizar", required = true) String patente) {
+        logger.info("Actualizando vehiculo de despacho con patente: {}", patente);
         try {
             VehiculoDespacho vehiculoExistente = vehiculoDespachoService.actualizarVehiculoDespacho(vehiculo, patente);
             if (vehiculoExistente == null) {
+                logger.warn("Vehiculo con patente {} no encontrado para actualizar", patente);
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
             EntityModel<VehiculoDespacho> vehiculoEntity = vehiculoDespachoAssembler.toModel(vehiculoExistente);
+            logger.info("Vehiculo de despacho actualizado exitosamente: {}", vehiculoExistente);
             return new ResponseEntity<>(vehiculoEntity, HttpStatus.OK);
         } catch (Exception e) {
-            System.out.println("Error al actualizar el vehiculo");
+            logger.error("Error al actualizar vehiculo de despacho", e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -210,12 +226,14 @@ public class VehiculoDespachoControllerV2 {
                     "  \"ano\": 2025\n" +
                     "}") @Parameter(description = "Patente del vehiculo a actualizar", required = true) VehiculoDespacho vehiculo,
             @PathVariable String patente) {
+        logger.info("Parchando vehiculo de despacho con patente: {}", patente);
         try {
             VehiculoDespacho vehiculoParchar = vehiculoDespachoService.parcharVehiculoDespacho(vehiculo, patente);
             EntityModel<VehiculoDespacho> vehiculoEntity = vehiculoDespachoAssembler.toModel(vehiculoParchar);
+            logger.info("Vehiculo de despacho parchado exitosamente: {}", vehiculoParchar);
             return ResponseEntity.ok(vehiculoEntity);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            logger.error("Error al parchar vehiculo de despacho", e);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
@@ -233,10 +251,13 @@ public class VehiculoDespachoControllerV2 {
             @ApiResponse(responseCode = "400", description = "Operacion erronea, vehiculo no existe o request mal realizado")
     })
     public ResponseEntity<?> borrarVehiculoDespacho(@PathVariable String patente) {
+        logger.info("Eliminando vehiculo de despacho con patente: {}", patente);
         try {
             vehiculoDespachoService.borrarVehiculoDespacho(patente);
+            logger.info("Vehiculo de despacho con patente {} eliminado exitosamente", patente);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {
+            logger.error("Error al eliminar vehiculo de despacho", e);
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }

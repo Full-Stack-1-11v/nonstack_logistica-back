@@ -3,7 +3,8 @@ package com.perfulandia.cl.logistica.converter;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.perfulandia.cl.logistica.client.OrdenFeignClient;
 import com.perfulandia.cl.logistica.dto.GuiaDespachoDTO;
@@ -14,6 +15,9 @@ import com.perfulandia.cl.logistica.model.GuiaDespacho;
  * de otros microservicios a través de un cliente Feign.
  */
 public class GuiaDespachoConverter {
+
+    private static final Logger log = LoggerFactory.getLogger(GuiaDespachoConverter.class);
+
     /**
      * Convierte un objeto de entidad {@link GuiaDespacho} a un objeto {@link GuiaDespachoDTO}.
      * Mapea los campos de la entidad a los campos correspondientes del DTO.
@@ -26,6 +30,7 @@ public class GuiaDespachoConverter {
      */
 
     public static GuiaDespachoDTO convertToDTO(GuiaDespacho guiaDespacho,OrdenFeignClient ordenClient){
+        log.info("[GuiaDespachoConverter.convertToDTO] Converting GuiaDespacho with id {} to GuiaDespachoDTO", guiaDespacho.getIdDespacho());
         GuiaDespachoDTO dto = new GuiaDespachoDTO();
         dto.setIdEnvio(guiaDespacho.getIdEnvio());
         dto.setIdOrden(guiaDespacho.getIdOrden());

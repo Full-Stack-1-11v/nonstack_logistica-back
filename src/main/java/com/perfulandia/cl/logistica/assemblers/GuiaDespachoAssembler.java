@@ -3,13 +3,15 @@ package com.perfulandia.cl.logistica.assemblers;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
+import org.springframework.lang.NonNull;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
-import com.perfulandia.cl.logistica.controller.GuiaDespachoController;
 import com.perfulandia.cl.logistica.controller.GuiaDespachoControllerV2;
 import com.perfulandia.cl.logistica.model.GuiaDespacho;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Assembler para convertir un {@link GuiaDespacho} a un {@link EntityModel}.
  * Agrega enlaces HATEOAS para la navegación de la API REST.
@@ -18,6 +20,8 @@ import com.perfulandia.cl.logistica.model.GuiaDespacho;
 
 public class GuiaDespachoAssembler implements RepresentationModelAssembler<GuiaDespacho, EntityModel<GuiaDespacho>>{
 
+    private static final Logger log = LoggerFactory.getLogger(GuiaDespachoAssembler.class);
+
     /**
      * Convierte un objeto {@link GuiaDespacho} a un {@link EntityModel} con enlaces HATEOAS.
      *
@@ -25,7 +29,9 @@ public class GuiaDespachoAssembler implements RepresentationModelAssembler<GuiaD
      * @return un {@link EntityModel} que contiene el {@link GuiaDespacho} y los enlaces HATEOAS.
      */
 @Override
-    public EntityModel<GuiaDespacho> toModel(GuiaDespacho guiaDespacho) {
+@NonNull
+    public EntityModel<GuiaDespacho> toModel(@NonNull GuiaDespacho guiaDespacho) {
+        log.info("[GuiaDespachoAssembler.toModel] Assembling GuiaDespacho to EntityModel for GuiaDespacho with id {}", guiaDespacho.getIdDespacho());
 
         GuiaDespacho dummyGuiaDespacho = new GuiaDespacho();
 

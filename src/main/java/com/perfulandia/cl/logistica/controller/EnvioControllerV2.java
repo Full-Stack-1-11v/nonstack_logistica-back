@@ -3,7 +3,8 @@ package com.perfulandia.cl.logistica.controller;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.perfulandia.cl.logistica.assemblers.EnvioDTOModelAssembler;
-import com.perfulandia.cl.logistica.assemblers.EnvioModelAssembler;
 import com.perfulandia.cl.logistica.converter.EnvioConverter;
 import com.perfulandia.cl.logistica.dto.EnvioDTO;
 import com.perfulandia.cl.logistica.model.Envio;
@@ -44,6 +44,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RequestMapping("/api/v2/logistica/envios")
 public class EnvioControllerV2 {
 
+    private static final Logger logger = LoggerFactory.getLogger(EnvioControllerV2.class);
+
     @Autowired
     private EnvioService envioService;
 
@@ -63,10 +65,11 @@ public class EnvioControllerV2 {
             @ApiResponse(responseCode = "204", description = "No se encontraron envios")
     })
     public ResponseEntity<CollectionModel<EntityModel<EnvioDTO>>> getEnvios() {
+        logger.info("[getEnvios] Getting all shipments");
         List<Envio> envios = envioService.obtenerEnvios();
         List<EnvioDTO> enviosDTO = envios.stream().map(EnvioConverter::convertToDTO).toList();
         if (envios.isEmpty()) {
-
+            logger.warn("[getEnvios] No shipments found");
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
@@ -94,13 +97,14 @@ public class EnvioControllerV2 {
     })
     public ResponseEntity<EntityModel<EnvioDTO>> getEnvioPorId(
      @Parameter(description = "ID del envio a obtener", required = true) @PathVariable Integer id) {
+        logger.info("[getEnvioPorId] Getting shipment with id {}", id);
         Optional<Envio> envio = envioService.obtenerEnvioPorId(id);
         if(envio.isPresent()){
         EnvioDTO envioDTO = EnvioConverter.convertToDTO(envio.get());
         EntityModel<EnvioDTO> entityModel = assemblerDTO.toModel(envioDTO);
         return new ResponseEntity<>(entityModel, HttpStatus.OK);
         }
-        
+        logger.warn("[getEnvioPorId] Shipment with ID: {} not found", id);
         return ResponseEntity.notFound().build();
     }
 
@@ -121,10 +125,11 @@ public class EnvioControllerV2 {
     public ResponseEntity<CollectionModel<EntityModel<EnvioDTO>>> getEnvioPorFecha(
             @Parameter(description = "Fecha inicial (inclusive)", required = true, example = "2023-04-01") @PathVariable LocalDate fechaInicio,
             @Parameter(description = "Fecha final (inclusive)", required = true, example = "2025-12-12") @PathVariable LocalDate fechaFin) {
-
+        logger.info("[getEnvioPorFecha] Getting shipments by date range: {} - {}", fechaInicio, fechaFin);
         List<Envio> enviosEncontrados = envioService.buscarEnvioPorRangoDeFecha(fechaInicio, fechaFin);
 
         if (enviosEncontrados.isEmpty()) {
+            logger.warn("[getEnvioPorFecha] No shipments found in the date range: {} - {}", fechaInicio, fechaFin);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
@@ -170,12 +175,13 @@ public class EnvioControllerV2 {
                     "  }\n" +
                     "}") Envio envio) {
         try {
+            logger.info("[crearEnvio] Creating shipment.");
             Envio nuevoEnvio = envioService.crearEnvio(envio);
             EnvioDTO nuevoEnvioDTO = EnvioConverter.convertToDTO(nuevoEnvio);
             EntityModel<EnvioDTO> envioEntity = assemblerDTO.toModel(nuevoEnvioDTO);
             return new ResponseEntity<>(envioEntity, HttpStatus.CREATED);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            logger.error("[crearEnvio] Error creating shipment", e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -210,15 +216,18 @@ public class EnvioControllerV2 {
                     "  \"ruta\": \"2\"\n" +
                     "}") Envio envio) {
         try {
+            logger.info("[actualizarEnvio] Updating shipment with id: {}", id);
             Envio envioActualizado = envioService.actualizarEnvio(id, envio);
             if (envioActualizado != null) {
                 EnvioDTO envioDTO = EnvioConverter.convertToDTO(envioActualizado);
                 EntityModel<EnvioDTO> envioEntity = assemblerDTO.toModel(envioDTO);
                 return ResponseEntity.ok(envioEntity);
             } else {
+                logger.warn("[actualizarEnvio] Shipment not found with id: {}", id);
                 return ResponseEntity.notFound().build();
             }
         } catch (Exception e) {
+            logger.error("[actualizarEnvio] Error updating shipment with id: {}", id, e);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
@@ -251,6 +260,7 @@ public class EnvioControllerV2 {
                     "  \"ruta\": \"2\"\n" +
                     "}") Envio envio) {
         try {
+            logger.info("[parcharEnvio] Patching shipment with id: {}", id);
             Envio envioActualizado = envioService.parcharEnvio(id, envio);
 
             if (envioActualizado != null) {
@@ -258,10 +268,12 @@ public class EnvioControllerV2 {
                 EntityModel<EnvioDTO> envioEntity = assemblerDTO.toModel(envioDTO);
                 return ResponseEntity.ok(envioEntity);
             } else {
+                logger.warn("[parcharEnvio] Shipment not found with id: {}", id);
                 return ResponseEntity.notFound().build();
             }
 
         } catch (Exception e) {
+            logger.error("[parcharEnvio] Error patching shipment with id: {}", id, e);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
@@ -281,9 +293,11 @@ public class EnvioControllerV2 {
     public ResponseEntity<Void> eliminarEnvio(
             @Parameter(description = "Id del envio a borrar", required = true) @PathVariable Integer id) {
         try {
+            logger.info("[eliminarEnvio] Deleting shipment with id: {}", id);
             envioService.eliminarEnvio(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {
+            logger.error("[eliminarEnvio] Error deleting shipment with id: {}", id, e);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
