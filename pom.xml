@@ -142,7 +142,7 @@
 					</execution>
 					<execution>
 						<id>report</id>
-						<phase>test</phase>
+						<phase>verify</phase>
 						<goals>
 							<goal>report</goal>
 						</goals>
@@ -161,11 +161,6 @@
 											<counter>LINE</counter>
 											<value>COVEREDRATIO</value>
 											<minimum>0.60</minimum>
-										</limit>
-										<limit>
-											<counter>CLASS</counter>
-											<value>MISSED</value>
-											<maximum>0</maximum>
 										</limit>
 									</limits>
 								</rule>

@@ -100,7 +100,7 @@ public class GuiaDespachoController {
      * @return Un {@link ResponseEntity} con la {@link GuiaDespacho} encontrada o un estado NOT_FOUND.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<GuiaDespacho> getGuiaDespachoById(@RequestParam Integer id) {
+    public ResponseEntity<GuiaDespacho> getGuiaDespachoById(@PathVariable Integer id) {
         logger.info("[getGuiaDespachoById] Obteniendo guia de despacho con id: {}", id);
         Optional<GuiaDespacho> guiaDespachoOptional = guiaDespachoService.obtenerGuiaDespachoPorId(id);
         if(guiaDespachoOptional.isPresent()){

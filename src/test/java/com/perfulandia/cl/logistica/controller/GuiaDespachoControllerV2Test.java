@@ -78,7 +78,7 @@ public class GuiaDespachoControllerV2Test {
         guiaDespachoMock.setIdDespacho(1);
         guiaDespachoMock.setIdEnvio(123);
         guiaDespachoMock.setIdOrden(456);
-        guiaDespachoMock.setEnvios(new ArrayList<>()); // Initialize the list of envios
+        guiaDespachoMock.setEnvios(new ArrayList<>());
 
         GuiaDespacho guiaDespacho2 = new GuiaDespacho();
         guiaDespacho2.setIdDespacho(2);
