@@ -1,0 +1,200 @@
+package com.perfulandia.cl.logistica.controller;
+
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.perfulandia.cl.logistica.assemblers.RutaAssembler;
+import com.perfulandia.cl.logistica.model.Ruta;
+import com.perfulandia.cl.logistica.service.RutaService;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+@RestController
+@RequestMapping("/api/v2/logistica/envios/rutas")
+@Tag(name = "Rutas V2", description = "Operaciones relacionadas a la información de rutas,")
+public class RutaControllerV2 {
+
+    private static final Logger logger = LoggerFactory.getLogger(RutaControllerV2.class);
+
+    @Autowired
+    private RutaService rutaService;
+
+    @Autowired
+    private RutaAssembler rutaAssembler;
+
+    @GetMapping("")
+    @Operation(summary = "Obtener todas las rutas.", description = "Obtiene una lista de todas las rutas.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Operacion exitosa, no hay contenido."),
+            @ApiResponse(responseCode = "200", description = "Operacion exitosa, devuelve lista con todas las rutas.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Ruta.class))),
+            @ApiResponse(responseCode = "500", description = "Error interno del sevidor.")
+    })
+    public ResponseEntity<CollectionModel<EntityModel<Ruta>>> getRutas() {
+        logger.info("Obteniendo todas las rutas");
+        try {
+            List<Ruta> rutas = rutaService.getAllRutas();
+            List<EntityModel<Ruta>> rutaModels = rutas.stream()
+                                                .map(rutaAssembler::toModel)
+                                                .toList();
+            CollectionModel<EntityModel<Ruta>> collectionModel = CollectionModel.of(rutaModels);
+            if (rutas.isEmpty()) {
+                logger.info("No se encontraron rutas");
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+
+            logger.info("Se encontraron {} rutas", rutas.size());
+            return ResponseEntity.ok(collectionModel);
+
+        } catch (Exception e) {
+            logger.error("Error al obtener rutas", e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/{x_1}/{x_2}/{y_1}/{y_2}")
+    @Operation(summary = "Obtener todos las rutas en un rango de coordenadas", description = "Obtiene una lista de todas las rutas dependiendo de las coordenadas iniciales y finales.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Operacion exitosa, no hay contenido."),
+            @ApiResponse(responseCode = "200", description = "Operacion exitosa, devuelve lista con todas las rutas dentro del rango de coordenadas.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Ruta.class))),
+            @ApiResponse(responseCode = "500", description = "Error interno del sevidor.")
+    })
+    public ResponseEntity<CollectionModel<EntityModel<Ruta>>> getRutaByCoords(
+            @Parameter(description = "Coordenada X inicial de la ruta", required = true) @PathVariable Float x_1,
+            @Parameter(description = "Coordenada X final de la ruta", required = true) @PathVariable Float x_2,
+            @Parameter(description = "Coordenada Y inicial de la ruta", required = true) @PathVariable Float y_1,
+            @Parameter(description = "Coordenada Y final de la ruta", required = true) @PathVariable Float y_2) {
+        logger.info("Buscando rutas por coordenadas: x_1={}, x_2={}, y_1={}, y_2={}", x_1, x_2, y_1, y_2);
+        try {
+            List<Ruta> rutasEncontradas = rutaService.buscarRutasPorCoordenadas(x_1, x_2, y_1, y_2);
+            List<EntityModel<Ruta>> rutasEntity = rutasEncontradas.stream()
+                                                .map(rutaAssembler::toModel)
+                                                .toList();
+
+            CollectionModel<EntityModel<Ruta>> collectionModel = CollectionModel.of(rutasEntity);
+            if (rutasEncontradas.isEmpty()) {
+                logger.info("No se encontraron rutas para las coordenadas dadas");
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+
+            logger.info("Se encontraron {} rutas", rutasEncontradas.size());
+            return ResponseEntity.ok(collectionModel);
+
+        } catch (Exception e) {
+            logger.error("Error al buscar rutas por coordenadas", e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
+    @PostMapping("")
+    @Operation(summary = "Registra una ruta a traves de un body")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Operacion exitosa, devuelve el la ruta registrada.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Ruta.class))),
+            @ApiResponse(responseCode = "500", description = "No se pudo registrar(erorr interno)")
+    })
+    public ResponseEntity<EntityModel<Ruta>> createRuta(@RequestBody Ruta nuevaRuta) {
+        logger.info("Creando nueva ruta: {}", nuevaRuta);
+        try {
+            Ruta rutaCreada = rutaService.crearRuta(nuevaRuta);
+            EntityModel<Ruta> rutaEntity = rutaAssembler.toModel(rutaCreada);
+            logger.info("Ruta creada exitosamente");
+            return new ResponseEntity<>(rutaEntity, HttpStatus.CREATED);
+        } catch (Exception e) {
+            logger.error("Error al crear ruta: {}", e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping("/{idRuta}")
+    @Operation(summary = "Actualiza una ruta a traves de un body y la id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Operacion exitosa, devuelve la ruta actualizada.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Ruta.class))),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor.")
+    })
+    public ResponseEntity<EntityModel<Ruta>> putRuta(@RequestBody @Schema(description = "Datos de la ruta a crear", example = "{\n" +
+            "  \"coordXInicio\": 25.03,\n" +
+            "  \"coordYInicio\": 15.03,\n" +
+            "  \"coordXFinal\": -25.03,\n" +
+            "  \"coordYFinal\": -15.03\n" +
+            "}") Ruta ruta,
+            @Parameter(description = "Id de la ruta a realizar el PUT", required = true) @PathVariable Integer idRuta) {
+        logger.info("Actualizando ruta con id: {}", idRuta);
+        try {
+            Ruta rutaActualizada = rutaService.putRuta(ruta, idRuta);
+            EntityModel<Ruta> rutaModel = rutaAssembler.toModel(rutaActualizada);
+            logger.info("Ruta actualizada exitosamente: {}", rutaActualizada);
+            return ResponseEntity.ok(rutaModel);
+        } catch (Exception e) {
+            logger.error("Error al actualizar ruta: {}", e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PatchMapping("/{idRuta}")
+    @Operation(summary = "Parcha una ruta a traves de un body y la id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Operacion exitosa, devuelve la ruta parchada.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Ruta.class))),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor.")
+    })
+    public ResponseEntity<EntityModel<Ruta>> patchRuta(@RequestBody @Schema(description = "Datos de la ruta a crear", example = "{\n" +
+            "  \"coordXInicio\": 25.03,\n" +
+            "  \"coordYInicio\": 15.03,\n" +
+            "  \"coordXFinal\": -25.03,\n" +
+            "  \"coordYFinal\": -15.03\n" +
+            "}") Ruta ruta,
+            @Parameter(description = "Id de la ruta a PATCH.", required = true) @PathVariable Integer idRuta) {
+        logger.info("Parchando ruta con id: {}", idRuta);
+        try {
+            Ruta rutaActualizada = rutaService.parcharRuta(ruta, idRuta);
+            EntityModel<Ruta> rutaModel = rutaAssembler.toModel(rutaActualizada);
+            logger.info("Ruta parchada exitosamente: {}", rutaActualizada);
+            return ResponseEntity.ok(rutaModel);
+        } catch (Exception e) {
+            logger.error("Error al parchar ruta: {}", e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping("/{idRuta}")
+    @Operation(summary = "Borra una ruta usando su id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Operacion exitosa, no devuelve contenido."),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor.")
+    })
+    public ResponseEntity<?> deleteRuta(
+    @Parameter(description = "Id de la ruta a eliminar." , required = true)    
+    @PathVariable Integer idRuta) {
+        logger.info("Eliminando ruta con id: {}", idRuta);
+        try {
+            rutaService.deleteRuta(idRuta);
+            logger.info("Ruta eliminada exitosamente");
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (Exception e) {
+            logger.error("Error al eliminar ruta: {}", e.getMessage());
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+}
