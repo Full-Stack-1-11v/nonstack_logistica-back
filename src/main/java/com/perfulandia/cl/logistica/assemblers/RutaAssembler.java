@@ -21,19 +21,37 @@ public class RutaAssembler implements RepresentationModelAssembler<Ruta, EntityM
     private static final Logger log = LoggerFactory.getLogger(RutaAssembler.class);
 
     /**
-     * Convierte un objeto {@link Ruta} a un {@link EntityModel} con enlaces HATEOAS.
+     * Convierte un objeto {@link Ruta} a un {@link EntityModel} con enlaces
+     * HATEOAS.
      *
      * @param ruta el objeto {@link Ruta} a convertir.
-     * @return un {@link EntityModel} que contiene la {@link Ruta} y los enlaces HATEOAS.
+     * @return un {@link EntityModel} que contiene la {@link Ruta} y los enlaces
+     *         HATEOAS.
      */
     @Override
     @NonNull
     public EntityModel<Ruta> toModel(@NonNull Ruta ruta) {
-        log.info("[RutaAssembler.toModel]Assembling Ruta to EntityModel for Ruta with start coords ({}, {}) and end coords ({}, {})", ruta.getCoordXInicio(), ruta.getCoordYInicio(), ruta.getCoordXFinal(), ruta.getCoordYFinal());
-        return EntityModel.of(ruta,
-                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(RutaControllerV2.class).getRutas()).withRel("rutas"),
-                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(RutaControllerV2.class).getRutaByCoords(ruta.getCoordXInicio(), ruta.getCoordXFinal(), ruta.getCoordYInicio(), ruta.getCoordYFinal())).withSelfRel()
-        );
+        log.info(
+                "[RutaAssembler.toModel]Assembling Ruta to EntityModel for Ruta with start coords ({}, {}) and end coords ({}, {})",
+                ruta.getCoordXInicio(), ruta.getCoordYInicio(), ruta.getCoordXFinal(), ruta.getCoordYFinal());
+        EntityModel<Ruta> rutaModel = EntityModel.of(ruta,
+                WebMvcLinkBuilder
+                        .linkTo(WebMvcLinkBuilder.methodOn(RutaControllerV2.class).putRuta(null, ruta.getIdRuta()))
+                        .withSelfRel(),
+                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(RutaControllerV2.class).getRutas())
+                        .withRel("rutas"));
+
+        // PUT
+        rutaModel.add(WebMvcLinkBuilder
+                .linkTo(WebMvcLinkBuilder.methodOn(RutaControllerV2.class).putRuta(null, ruta.getIdRuta()))
+                .withRel("update"));
+
+        // DELETE
+        rutaModel.add(WebMvcLinkBuilder
+                .linkTo(WebMvcLinkBuilder.methodOn(RutaControllerV2.class).deleteRuta(ruta.getIdRuta()))
+                .withRel("delete"));
+
+        return rutaModel;
     }
-    
+
 }
