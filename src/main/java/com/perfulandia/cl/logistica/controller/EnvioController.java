@@ -39,7 +39,7 @@ import org.springframework.web.bind.annotation.RequestBody;
  */
 @RestController
 @RequestMapping("/api/v1/logistica/envios")
-@Tag(name = "Envios", description = "Operaciones relacionadas a los envios de Perfulandia")
+@Tag(name = "Envios V1", description = "Operaciones relacionadas a los envios de Perfulandia")
 public class EnvioController {
     /**
      * Logger de la clase para registrar eventos o errores.

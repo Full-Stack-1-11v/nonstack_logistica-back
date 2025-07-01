@@ -39,7 +39,8 @@ import org.springframework.web.bind.annotation.PathVariable;
  */
 @RestController
 @RequestMapping("/api/v2/logistica/despachos")
-@Tag(name = "Guias de Despacho", description = "Operaciones relacionadas a las guias de despacho de Perfulandia")
+@Tag(name = "Guias de Despacho V2", description = "Operaciones relacionadas a las guias de despacho de Perfulandia")
+
 public class GuiaDespachoControllerV2 {
 
     private static final Logger logger = LoggerFactory.getLogger(GuiaDespachoControllerV2.class);

@@ -35,7 +35,7 @@ import org.springframework.web.bind.annotation.RequestBody;
  */
 @RestController
 @RequestMapping("/api/v1/logistica/envios/rutas")
-@Tag(name = "Rutas", description = "Operaciones relacionadas a la información de rutas,")
+@Tag(name = "Rutas V1", description = "Operaciones relacionadas a la información de rutas,")
 public class RutaController {
 
     private static final Logger logger = LoggerFactory.getLogger(RutaController.class);

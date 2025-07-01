@@ -33,7 +33,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/v2/logistica/envios/rutas")
-@Tag(name = "Rutas", description = "Operaciones relacionadas a la información de rutas,")
+@Tag(name = "Rutas V2", description = "Operaciones relacionadas a la información de rutas,")
 public class RutaControllerV2 {
 
     private static final Logger logger = LoggerFactory.getLogger(RutaControllerV2.class);

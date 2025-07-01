@@ -41,7 +41,7 @@ import org.springframework.web.bind.annotation.RequestBody;
  */
 @RestController
 @RequestMapping("/api/v2/logistica/vehiculos")
-@Tag(name = "Vehículos de Despacho", description = "Operaciones relacionadas a los vehiculos de despacho de Perfulandia")
+@Tag(name = "Vehículos de Despacho V2", description = "Operaciones relacionadas a los vehiculos de despacho de Perfulandia")
 public class VehiculoDespachoControllerV2 {
 
     private static final Logger logger = LoggerFactory.getLogger(VehiculoDespachoControllerV2.class);
